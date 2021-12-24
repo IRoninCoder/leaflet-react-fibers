@@ -1,5 +1,16 @@
 "use strict";
 /// <reference types="../@types" />
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __rest = (this && this.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -15,14 +26,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const react_reconciler_1 = __importDefault(require("react-reconciler"));
-const leaflet_1 = __importDefault(require("leaflet"));
-const lodash_1 = require("lodash");
-const marker_icon_png_1 = __importDefault(require("leaflet/dist/images/marker-icon.png"));
-const marker_shadow_png_1 = __importDefault(require("leaflet/dist/images/marker-shadow.png"));
-const instances = new Map();
-const maps = new Map();
-let contentRenderer;
+var react_reconciler_1 = __importDefault(require("react-reconciler"));
+var leaflet_1 = __importDefault(require("leaflet"));
+var lodash_1 = require("lodash");
+var marker_icon_png_1 = __importDefault(require("leaflet/dist/images/marker-icon.png"));
+var marker_shadow_png_1 = __importDefault(require("leaflet/dist/images/marker-shadow.png"));
+var instances = new Map();
+var maps = new Map();
+var contentRenderer;
 /**
  * This method should return a newly created node. For example, the DOM renderer would call `document.createElement(type)` here and then set the properties from `props`.
  *
@@ -34,288 +45,288 @@ let contentRenderer;
  *
  * This method happens **in the render phase**. It can (and usually should) mutate the node it has just created before returning it, but it must not modify any other nodes. It must not register any event handlers on the parent tree. This is because an instance being created doesn't guarantee it would be placed in the tree — it could be left unused and later collected by GC. If you need to do something when an instance is definitely in the tree, look at `commitMount` instead.
  */
-const createInstance = (type, props, rootContainer, hostContext, internalHandle) => {
-    let instance;
+var createInstance = function (type, props, rootContainer, hostContext, internalHandle) {
+    var instance;
     switch (type) {
         case 'lfMap': {
-            const _a = props, { options, whenReady } = _a, restProps = __rest(_a, ["options", "whenReady"]);
-            const mp = leaflet_1.default.map(rootContainer, options);
-            if (whenReady) {
-                mp.whenReady(() => whenReady(mp));
+            var _a = props, options = _a.options, whenReady_1 = _a.whenReady, restProps = __rest(_a, ["options", "whenReady"]);
+            var mp_1 = leaflet_1.default.map(rootContainer, options);
+            if (whenReady_1) {
+                mp_1.whenReady(function () { return whenReady_1(mp_1); });
             }
-            maps.set(rootContainer, mp);
+            maps.set(rootContainer, mp_1);
             instance = {
-                type,
+                type: type,
                 category: 'map',
-                leaflet: mp,
-                props
+                leaflet: mp_1,
+                props: props
             };
             break;
         }
         case 'lfImage': {
-            const lfImageProps = props;
-            const layer = leaflet_1.default.imageOverlay(lfImageProps.imageUrl, lfImageProps.bounds, lfImageProps.options);
+            var lfImageProps = props;
+            var layer = leaflet_1.default.imageOverlay(lfImageProps.imageUrl, lfImageProps.bounds, lfImageProps.options);
             setProps(layer, lfImageProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfPopup': {
-            const _b = props, { children, latlng } = _b, restProps = __rest(_b, ["children", "latlng"]);
-            const layer = leaflet_1.default.popup(restProps.options);
-            const element = document.createElement('section'); //TODO: imrove the wrapper element for lfPopup
+            var _b = props, children = _b.children, latlng = _b.latlng, restProps = __rest(_b, ["children", "latlng"]);
+            var layer = leaflet_1.default.popup(restProps.options);
+            var element = document.createElement('section'); //TODO: imrove the wrapper element for lfPopup
             layer.setContent(element);
             setProps(layer, restProps);
             if (contentRenderer) {
                 contentRenderer(children, element);
             }
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfTooltip': {
-            const _c = props, { children } = _c, restProps = __rest(_c, ["children"]);
-            const layer = leaflet_1.default.tooltip(restProps.options);
-            const element = document.createElement('section'); //TODO: imrove the wrapper element for lfPopup
+            var _c = props, children = _c.children, restProps = __rest(_c, ["children"]);
+            var layer = leaflet_1.default.tooltip(restProps.options);
+            var element = document.createElement('section'); //TODO: imrove the wrapper element for lfPopup
             layer.setContent(element);
             setProps(layer, restProps);
             if (contentRenderer) {
                 contentRenderer(children, element);
             }
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfRectangle': {
-            const _d = props, { bounds, options } = _d, restProps = __rest(_d, ["bounds", "options"]);
-            const layer = leaflet_1.default.rectangle(bounds, options);
+            var _d = props, bounds = _d.bounds, options = _d.options, restProps = __rest(_d, ["bounds", "options"]);
+            var layer = leaflet_1.default.rectangle(bounds, options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfMarker': {
-            const _e = props, { latlng } = _e, restProps = __rest(_e, ["latlng"]);
-            const icon = leaflet_1.default.icon({
+            var _e = props, latlng = _e.latlng, restProps = __rest(_e, ["latlng"]);
+            var icon = leaflet_1.default.icon({
                 iconUrl: marker_icon_png_1.default,
                 shadowUrl: marker_shadow_png_1.default
             });
-            const layer = leaflet_1.default.marker(latlng, Object.assign({ icon }, restProps.options));
+            var layer = leaflet_1.default.marker(latlng, __assign({ icon: icon }, restProps.options));
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfTiles': {
-            const _f = props, { urlTemplate } = _f, restProps = __rest(_f, ["urlTemplate"]);
-            const layer = leaflet_1.default.tileLayer(urlTemplate, restProps.options);
+            var _f = props, urlTemplate = _f.urlTemplate, restProps = __rest(_f, ["urlTemplate"]);
+            var layer = leaflet_1.default.tileLayer(urlTemplate, restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfTilesWMS': {
-            const _g = props, { baseUrl } = _g, restProps = __rest(_g, ["baseUrl"]);
-            const layer = leaflet_1.default.tileLayer.wms(baseUrl, restProps.options);
+            var _g = props, baseUrl = _g.baseUrl, restProps = __rest(_g, ["baseUrl"]);
+            var layer = leaflet_1.default.tileLayer.wms(baseUrl, restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfVideo': {
-            const _h = props, { video, bounds } = _h, restProps = __rest(_h, ["video", "bounds"]);
-            const layer = leaflet_1.default.videoOverlay(video, bounds, restProps.options);
+            var _h = props, video = _h.video, bounds = _h.bounds, restProps = __rest(_h, ["video", "bounds"]);
+            var layer = leaflet_1.default.videoOverlay(video, bounds, restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfPolyline': {
-            const _j = props, { latlngs } = _j, restProps = __rest(_j, ["latlngs"]);
-            const layer = leaflet_1.default.polyline(latlngs, restProps.options);
+            var _j = props, latlngs = _j.latlngs, restProps = __rest(_j, ["latlngs"]);
+            var layer = leaflet_1.default.polyline(latlngs, restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfPolygon': {
-            const _k = props, { latlngs } = _k, restProps = __rest(_k, ["latlngs"]);
-            const layer = leaflet_1.default.polygon(latlngs, restProps.options);
+            var _k = props, latlngs = _k.latlngs, restProps = __rest(_k, ["latlngs"]);
+            var layer = leaflet_1.default.polygon(latlngs, restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfCircle': {
-            const _l = props, { latlng } = _l, restProps = __rest(_l, ["latlng"]);
-            const layer = leaflet_1.default.circle(latlng, restProps.options);
+            var _l = props, latlng = _l.latlng, restProps = __rest(_l, ["latlng"]);
+            var layer = leaflet_1.default.circle(latlng, restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfCircleMarker': {
-            const _m = props, { latlng } = _m, restProps = __rest(_m, ["latlng"]);
-            const layer = leaflet_1.default.circleMarker(latlng, restProps.options);
+            var _m = props, latlng = _m.latlng, restProps = __rest(_m, ["latlng"]);
+            var layer = leaflet_1.default.circleMarker(latlng, restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfSVG': {
-            const _o = props, { svgImage, bounds } = _o, restProps = __rest(_o, ["svgImage", "bounds"]);
-            const layer = leaflet_1.default.svgOverlay(svgImage, bounds, restProps.options);
+            var _o = props, svgImage = _o.svgImage, bounds = _o.bounds, restProps = __rest(_o, ["svgImage", "bounds"]);
+            var layer = leaflet_1.default.svgOverlay(svgImage, bounds, restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfLayerGroup': {
-            const _p = props, { children } = _p, restProps = __rest(_p, ["children"]);
-            const layer = leaflet_1.default.layerGroup([], restProps.options);
+            var _p = props, children = _p.children, restProps = __rest(_p, ["children"]);
+            var layer = leaflet_1.default.layerGroup([], restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layergroup',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfFeatureGroup': {
-            const _q = props, { children } = _q, restProps = __rest(_q, ["children"]);
-            const layer = leaflet_1.default.featureGroup([], restProps.options);
+            var _q = props, children = _q.children, restProps = __rest(_q, ["children"]);
+            var layer = leaflet_1.default.featureGroup([], restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'featuregroup',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfGeoJSON': {
-            const _r = props, { geojson } = _r, restProps = __rest(_r, ["geojson"]);
-            const layer = leaflet_1.default.geoJSON(geojson, restProps.options);
+            var _r = props, geojson = _r.geojson, restProps = __rest(_r, ["geojson"]);
+            var layer = leaflet_1.default.geoJSON(geojson, restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
         case 'lfGridLayer': {
-            const restProps = props;
-            const layer = leaflet_1.default.gridLayer(restProps.options);
+            var restProps = props;
+            var layer = leaflet_1.default.gridLayer(restProps.options);
             setProps(layer, restProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: layer,
-                props
+                props: props
             };
             break;
         }
     }
     if (!instance) {
         if (type.indexOf('Layer') > -1) {
-            const layerProps = props;
-            const klassInstance = new layerProps.klass(Object.assign(Object.assign({}, layerProps.params), { children: props.children, jsxRenderer: contentRenderer }));
+            var layerProps = props;
+            var klassInstance = new layerProps.klass(__assign(__assign({}, layerProps.params), { children: props.children, jsxRenderer: contentRenderer }));
             setProps(klassInstance, layerProps);
             instance = {
-                type,
+                type: type,
                 category: 'layer',
                 leaflet: klassInstance,
-                props
+                props: props
             };
         }
         else if (type.indexOf('Control') > -1) {
-            const controlProps = props;
-            const klassInstance = new controlProps.klass(Object.assign(Object.assign({}, controlProps.params), { children: props.children, jsxRenderer: contentRenderer }));
+            var controlProps = props;
+            var klassInstance = new controlProps.klass(__assign(__assign({}, controlProps.params), { children: props.children, jsxRenderer: contentRenderer }));
             instance = {
-                type,
+                type: type,
                 category: 'control',
                 leaflet: klassInstance,
-                props
+                props: props
             };
         }
         else if (type.indexOf('Handler') > -1) {
-            const handlerProps = props;
+            var handlerProps = props;
             instance = {
-                type,
+                type: type,
                 category: 'handler',
                 leaflet: handlerProps.klass,
-                props
+                props: props
             };
         }
         if (type.startsWith('lf') && !instance) {
-            throw Error(`react-leaflet-fibers: Unknown type ${type}. If you are trying to use customized JSX, then make sure that your intrinsic declaration (aka tag name) ends with one of "Control", "Layer" or "Handler".`);
+            throw Error("react-leaflet-fibers: Unknown type ".concat(type, ". If you are trying to use customized JSX, then make sure that your intrinsic declaration (aka tag name) ends with one of \"Control\", \"Layer\" or \"Handler\"."));
         }
     }
     return instance;
 };
-const hostConfig = {
+var hostConfig = {
     supportsMutation: true,
     supportsPersistence: false,
-    createInstance,
+    createInstance: createInstance,
     /**
     * Same as `createInstance`, but for text nodes. If your renderer doesn't support text nodes, you can throw here.
     */
-    createTextInstance: (text, rootContainer, hostContext, internalHandle) => {
+    createTextInstance: function (text, rootContainer, hostContext, internalHandle) {
         // do not throw due to possibility of inner HTML E.g. lfPopup content
         return null;
     },
@@ -324,20 +335,20 @@ const hostConfig = {
      *
      * This method happens **in the render phase**. It can mutate `parentInstance` and `child`, but it must not modify any other nodes. It's called while the tree is still being built up and not connected to the actual tree on the screen.
     */
-    appendInitialChild: (parentInstance, childInstance) => {
+    appendInitialChild: function (parentInstance, childInstance) {
         if (!parentInstance || !childInstance)
             return;
         childInstance.parent = parentInstance;
         if (parentInstance.category === 'map' && childInstance.category === 'handler') {
-            const parent = parentInstance.leaflet;
-            const handler = childInstance.leaflet;
-            const props = childInstance.props;
-            parent.addHandler(props.name, handler);
+            var parent_1 = parentInstance.leaflet;
+            var handler = childInstance.leaflet;
+            var props = childInstance.props;
+            parent_1.addHandler(props.name, handler);
             if (props.enabled) {
-                parent[props.name].enable();
+                parent_1[props.name].enable();
             }
             else {
-                parent[props.name].disable();
+                parent_1[props.name].disable();
             }
             return;
         }
@@ -349,9 +360,9 @@ const hostConfig = {
                     default:
                         // special treatment needed for popups, tooltips
                         if (childInstance.type !== 'lfPopup' && childInstance.type !== 'lfTooltip') {
-                            const child = childInstance.leaflet;
-                            const parent = parentInstance.leaflet;
-                            child.addTo(parent);
+                            var child = childInstance.leaflet;
+                            var parent_2 = parentInstance.leaflet;
+                            child.addTo(parent_2);
                         }
                         break;
                 }
@@ -367,7 +378,7 @@ const hostConfig = {
      *
      * If you don't want to do anything here, you should return `false`.
      */
-    finalizeInitialChildren: (instance, type, props, rootContainer, hostContext) => {
+    finalizeInitialChildren: function (instance, type, props, rootContainer, hostContext) {
         return true;
     },
     /**
@@ -377,13 +388,13 @@ const hostConfig = {
      *
      * See the meaning of `rootContainer` and `hostContext` in the `createInstance` documentation.
      */
-    prepareUpdate: (instance, type, _a, _b, rootContainer, hostContext) => {
-        var { children: oldChilds } = _a, oldProps = __rest(_a, ["children"]);
-        var { children: newChilds } = _b, newProps = __rest(_b, ["children"]);
+    prepareUpdate: function (instance, type, _a, _b, rootContainer, hostContext) {
+        var oldChilds = _a.children, oldProps = __rest(_a, ["children"]);
+        var newChilds = _b.children, newProps = __rest(_b, ["children"]);
         if (propsChanged(oldProps, newProps)) {
             return {
-                rootContainer,
-                hostContext
+                rootContainer: rootContainer,
+                hostContext: hostContext
             };
         }
         return null;
@@ -397,7 +408,7 @@ const hostConfig = {
     *
     * This method happens **in the render phase**. Do not mutate the tree from it.
     */
-    shouldSetTextContent: (type, props) => {
+    shouldSetTextContent: function (type, props) {
         return false;
     },
     /**
@@ -407,7 +418,7 @@ const hostConfig = {
     *
     * This method happens **in the render phase**. Do not mutate the tree from it.
     */
-    getRootHostContext: (rootContainer) => {
+    getRootHostContext: function (rootContainer) {
         return {};
     },
     /**
@@ -419,7 +430,7 @@ const hostConfig = {
     *
     * This method happens **in the render phase**. Do not mutate the tree from it.
     */
-    getChildHostContext: (parentHostContext, type, rootContainer) => {
+    getChildHostContext: function (parentHostContext, type, rootContainer) {
         return parentHostContext;
     },
     /**
@@ -427,7 +438,7 @@ const hostConfig = {
     *
     * If you don't want to do anything here, return `instance`.
     */
-    getPublicInstance: (instance) => {
+    getPublicInstance: function (instance) {
         return instance === null || instance === void 0 ? void 0 : instance.leaflet;
     },
     /**
@@ -435,7 +446,7 @@ const hostConfig = {
     *
     * Even if you don't want to do anything here, you need to return `null` from it.
     */
-    prepareForCommit: (containerInfo) => {
+    prepareForCommit: function (containerInfo) {
         return null;
     },
     /**
@@ -443,27 +454,27 @@ const hostConfig = {
     *
     * You can leave it empty.
     */
-    resetAfterCommit: (containerInfo) => {
+    resetAfterCommit: function (containerInfo) {
     },
     /**
      * This method is called for a container that's used as a portal target. Usually you can leave it empty.
      */
-    preparePortalMount: (containerInfo) => {
+    preparePortalMount: function (containerInfo) {
     },
     /**
      * You can proxy this to `performance.now()` or its equivalent in your environment.
      */
-    now: () => { return performance.now(); },
+    now: function () { return performance.now(); },
     /**
      * You can proxy this to `setTimeout` or its equivalent in your environment.
      */
-    scheduleTimeout: (fn, delay) => {
+    scheduleTimeout: function (fn, delay) {
         setTimeout(fn, delay);
     },
     /**
      * You can proxy this to `clearTimeout` or its equivalent in your environment.
      */
-    cancelTimeout: (id) => {
+    cancelTimeout: function (id) {
         clearTimeout(id);
     },
     /**
@@ -484,7 +495,7 @@ const hostConfig = {
     *
     * Although this method currently runs in the commit phase, you still should not mutate any other nodes in it. If you need to do some additional work when a node is definitely connected to the visible tree, look at `commitMount`.
     */
-    appendChild: (parentInstance, child) => {
+    appendChild: function (parentInstance, child) {
         if (!parentInstance || !child)
             return;
         child.parent = parentInstance;
@@ -492,16 +503,16 @@ const hostConfig = {
             case 'map':
             case 'layergroup':
             case 'featuregroup':
-                const parent = parentInstance.leaflet;
-                const layer = child === null || child === void 0 ? void 0 : child.leaflet;
-                parent.addLayer(layer);
+                var parent_3 = parentInstance.leaflet;
+                var layer = child === null || child === void 0 ? void 0 : child.leaflet;
+                parent_3.addLayer(layer);
                 break;
         }
     },
     /**
     * Same as `appendChild`, but for when a node is attached to the root container. This is useful if attaching to the root has a slightly different implementation, or if the root container nodes are of a different type than the rest of the tree.
     */
-    appendChildToContainer: (container, child) => {
+    appendChildToContainer: function (container, child) {
         // leaflet already does the attaching
         return null;
     },
@@ -510,22 +521,22 @@ const hostConfig = {
     *
     * Note that React uses this method both for insertions and for reordering nodes. Similar to DOM, it is expected that you can call `insertBefore` to reposition an existing child. Do not mutate any other parts of the tree from it.
     */
-    insertBefore: (parentInstance, child, beforeChild) => {
+    insertBefore: function (parentInstance, child, beforeChild) {
         var _a, _b;
         switch (parentInstance === null || parentInstance === void 0 ? void 0 : parentInstance.category) {
             case 'map':
             case 'layergroup':
             case 'featuregroup':
-                const parent = parentInstance.leaflet;
-                const layer = child === null || child === void 0 ? void 0 : child.leaflet;
-                parent.addLayer(layer);
+                var parent_4 = parentInstance.leaflet;
+                var layer = child === null || child === void 0 ? void 0 : child.leaflet;
+                parent_4.addLayer(layer);
                 // New layers are added on top so let's see if we can fix that, when they share the parent element. 
                 // Sometimes they do not since leaflet layer insertions do not match JSX defs. 
                 // E.g. all lfCircle are added to a common <svg> element so if we place one next to a lfTileLayer, 
                 // then they will be added to different DOM elements and insertBefore is meaningless
-                const childAny = child === null || child === void 0 ? void 0 : child.leaflet;
-                const beforeChildAny = beforeChild === null || beforeChild === void 0 ? void 0 : beforeChild.leaflet;
-                const element = childAny.getElement ? childAny.getElement() : childAny.getContainer ? childAny.getContainer : null, elementBefore = beforeChildAny.getElement ? beforeChildAny.getElement() : beforeChildAny.getContainer ? beforeChildAny.getContainer : null;
+                var childAny = child === null || child === void 0 ? void 0 : child.leaflet;
+                var beforeChildAny = beforeChild === null || beforeChild === void 0 ? void 0 : beforeChild.leaflet;
+                var element = childAny.getElement ? childAny.getElement() : childAny.getContainer ? childAny.getContainer : null, elementBefore = beforeChildAny.getElement ? beforeChildAny.getElement() : beforeChildAny.getContainer ? beforeChildAny.getContainer : null;
                 if (element && elementBefore && element.parentNode === elementBefore.parentNode) {
                     (_a = element.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(element);
                     (_b = elementBefore.parentNode) === null || _b === void 0 ? void 0 : _b.insertBefore(element, elementBefore);
@@ -542,22 +553,22 @@ const hostConfig = {
     *
     * React will only call it for the top-level node that is being removed. It is expected that garbage collection would take care of the whole subtree. You are not expected to traverse the child tree in it.
     */
-    removeChild: (parentInstance, child) => {
+    removeChild: function (parentInstance, child) {
         switch (parentInstance === null || parentInstance === void 0 ? void 0 : parentInstance.category) {
             case 'map':
             case 'layergroup':
             case 'featuregroup':
-                const parent = parentInstance.leaflet;
-                const layer = child === null || child === void 0 ? void 0 : child.leaflet;
-                parent.removeLayer(layer);
+                var parent_5 = parentInstance.leaflet;
+                var layer = child === null || child === void 0 ? void 0 : child.leaflet;
+                parent_5.removeLayer(layer);
                 break;
         }
     },
     /**
     * Same as `removeChild`, but for when a node is detached from the root container. This is useful if attaching to the root has a slightly different implementation, or if the root container nodes are of a different type than the rest of the tree.
     */
-    removeChildFromContainer: (container, child) => {
-        const map = child.leaflet;
+    removeChildFromContainer: function (container, child) {
+        var map = child.leaflet;
         map === null || map === void 0 ? void 0 : map.remove();
     },
     /**
@@ -583,27 +594,27 @@ const hostConfig = {
     *
     * If you never return `true` from `finalizeInitialChildren`, you can leave it empty.
     */
-    commitMount: (instance, type, props, internalInstanceHandle) => {
+    commitMount: function (instance, type, props, internalInstanceHandle) {
         var _a, _b, _c;
         switch ((_a = instance === null || instance === void 0 ? void 0 : instance.parent) === null || _a === void 0 ? void 0 : _a.category) {
             case 'map': {
                 // popup as a layer
                 if (instance.type === 'lfPopup') {
-                    const popup = instance === null || instance === void 0 ? void 0 : instance.leaflet;
-                    const popupProps = instance === null || instance === void 0 ? void 0 : instance.props;
-                    const parent = instance.parent.leaflet;
-                    if (popupProps.latlng) {
-                        popup.setLatLng(popupProps.latlng);
-                        if (popupProps.isOpen) {
-                            popup.openPopup();
+                    var popup_1 = instance === null || instance === void 0 ? void 0 : instance.leaflet;
+                    var popupProps_1 = instance === null || instance === void 0 ? void 0 : instance.props;
+                    var parent_6 = instance.parent.leaflet;
+                    if (popupProps_1.latlng) {
+                        popup_1.setLatLng(popupProps_1.latlng);
+                        if (popupProps_1.isOpen) {
+                            popup_1.openPopup();
                         }
                     }
                     //TODO: what about click event handlers on the map or popup itself? this seeems to be a single handler for a singler event
-                    parent.on('click', (e) => {
-                        if (!popupProps.latlng) {
-                            popup.setLatLng(e.latlng);
+                    parent_6.on('click', function (e) {
+                        if (!popupProps_1.latlng) {
+                            popup_1.setLatLng(e.latlng);
                         }
-                        popup.openOn(parent);
+                        popup_1.openOn(parent_6);
                     });
                 }
                 break;
@@ -613,20 +624,20 @@ const hostConfig = {
             case 'featuregroup': {
                 // popup as an attachment
                 if (instance.type === 'lfPopup') {
-                    const popup = instance === null || instance === void 0 ? void 0 : instance.leaflet;
-                    const popupProps = instance === null || instance === void 0 ? void 0 : instance.props;
-                    const parent = (_b = instance === null || instance === void 0 ? void 0 : instance.parent) === null || _b === void 0 ? void 0 : _b.leaflet;
-                    parent.bindPopup(popup, popupProps.options);
+                    var popup = instance === null || instance === void 0 ? void 0 : instance.leaflet;
+                    var popupProps = instance === null || instance === void 0 ? void 0 : instance.props;
+                    var parent_7 = (_b = instance === null || instance === void 0 ? void 0 : instance.parent) === null || _b === void 0 ? void 0 : _b.leaflet;
+                    parent_7.bindPopup(popup, popupProps.options);
                     if (popupProps.isOpen) {
                         popup.openPopup();
                     }
                 }
                 // tooltip as an attachment
                 if (instance.type === 'lfTooltip') {
-                    const tooltip = instance === null || instance === void 0 ? void 0 : instance.leaflet;
-                    const tooltipProps = instance === null || instance === void 0 ? void 0 : instance.props;
-                    const parent = (_c = instance === null || instance === void 0 ? void 0 : instance.parent) === null || _c === void 0 ? void 0 : _c.leaflet;
-                    parent.bindTooltip(tooltip, tooltipProps.options);
+                    var tooltip = instance === null || instance === void 0 ? void 0 : instance.leaflet;
+                    var tooltipProps = instance === null || instance === void 0 ? void 0 : instance.props;
+                    var parent_8 = (_c = instance === null || instance === void 0 ? void 0 : instance.parent) === null || _c === void 0 ? void 0 : _c.leaflet;
+                    parent_8.bindTooltip(tooltip, tooltipProps.options);
                     if (tooltipProps.isOpen) {
                         tooltip.openTooltip();
                     }
@@ -640,70 +651,70 @@ const hostConfig = {
     *
     * The `internalHandle` data structure is meant to be opaque. If you bend the rules and rely on its internal fields, be aware that it may change significantly between versions. You're taking on additional maintenance risk by reading from it, and giving up all guarantees if you write something to it.
     */
-    commitUpdate: (instance, updatePayload, type, prevProps, nextProps, internalHandle) => {
+    commitUpdate: function (instance, updatePayload, type, prevProps, nextProps, internalHandle) {
         var _a, _b, _c, _d, _e, _f, _g, _h;
-        const map = maps.get(updatePayload.rootContainer);
+        var map = maps.get(updatePayload.rootContainer);
         switch (instance === null || instance === void 0 ? void 0 : instance.category) {
             case 'map': {
-                map.options = Object.assign(Object.assign({}, prevProps.options), nextProps.options);
+                map.options = __assign(__assign({}, prevProps.options), nextProps.options);
                 map.invalidateSize({ animate: false });
                 break;
             }
             case 'handler': {
-                const parent = map;
-                const props = nextProps;
+                var parent_9 = map;
+                var props = nextProps;
                 if (props.enabled) {
-                    parent[props.name].enable();
+                    parent_9[props.name].enable();
                 }
                 else {
-                    parent[props.name].disable();
+                    parent_9[props.name].disable();
                 }
                 break;
             }
             case 'layer':
             case 'layergroup':
             case 'featuregroup': {
-                const layer = instance === null || instance === void 0 ? void 0 : instance.leaflet;
+                var layer = instance === null || instance === void 0 ? void 0 : instance.leaflet;
                 // special case of attached popup
                 if (instance.type === 'lfPopup') {
-                    const popup = instance.leaflet;
-                    const popupProps = nextProps;
+                    var popup = instance.leaflet;
+                    var popupProps = nextProps;
                     if (popupProps.latlng) {
                         popup.setLatLng(popupProps.latlng);
                     }
                     if (((_a = instance.parent) === null || _a === void 0 ? void 0 : _a.category) === 'map') {
-                        const parent = (_b = instance.parent) === null || _b === void 0 ? void 0 : _b.leaflet;
+                        var parent_10 = (_b = instance.parent) === null || _b === void 0 ? void 0 : _b.leaflet;
                         if (popupProps.isOpen) {
-                            parent.openPopup(popup);
+                            parent_10.openPopup(popup);
                         }
                         else {
-                            parent.closePopup(popup);
+                            parent_10.closePopup(popup);
                         }
                     }
                     else {
-                        const parent = (_c = instance.parent) === null || _c === void 0 ? void 0 : _c.leaflet;
+                        var parent_11 = (_c = instance.parent) === null || _c === void 0 ? void 0 : _c.leaflet;
                         if (popupProps.isOpen) {
-                            parent.openPopup();
+                            parent_11.openPopup();
                         }
                         else {
-                            parent.closePopup();
+                            parent_11.closePopup();
                         }
                     }
                 }
                 else {
                     if (((_d = instance.parent) === null || _d === void 0 ? void 0 : _d.category) === 'map' || ((_e = instance.parent) === null || _e === void 0 ? void 0 : _e.category) === 'featuregroup' || ((_f = instance.parent) === null || _f === void 0 ? void 0 : _f.category) === 'layergroup') {
-                        const parent = (_g = instance.parent) === null || _g === void 0 ? void 0 : _g.leaflet;
-                        const newInstance = createInstance(type, nextProps, updatePayload.rootContainer, updatePayload.hostContext, internalHandle);
-                        const newLayer = newInstance === null || newInstance === void 0 ? void 0 : newInstance.leaflet;
-                        const layerProps = nextProps;
+                        var parent_12 = (_g = instance.parent) === null || _g === void 0 ? void 0 : _g.leaflet;
+                        var newInstance = createInstance(type, nextProps, updatePayload.rootContainer, updatePayload.hostContext, internalHandle);
+                        var newLayer = newInstance === null || newInstance === void 0 ? void 0 : newInstance.leaflet;
+                        var layerProps = nextProps;
                         // stateful layer, default behavior
                         if (!layerProps.hasOwnProperty('mutable') || layerProps.mutable) {
                             if (layer.getState && newLayer.setState) {
-                                const oldState = layer.getState();
+                                var oldState = layer.getState();
                                 newLayer.setState(oldState);
                             }
-                            parent.removeLayer(layer);
-                            parent.addLayer(newLayer);
+                            parent_12.removeLayer(layer);
+                            parent_12.addLayer(newLayer);
                         }
                         // standard layer
                         else {
@@ -715,19 +726,19 @@ const hostConfig = {
                 break;
             }
             case 'control': {
-                const parent = (_h = instance.parent) === null || _h === void 0 ? void 0 : _h.leaflet;
-                const control = instance === null || instance === void 0 ? void 0 : instance.leaflet;
-                const controlProps = nextProps;
-                const newInstance = createInstance(type, nextProps, updatePayload.rootContainer, updatePayload.hostContext, internalHandle);
-                const newControl = newInstance === null || newInstance === void 0 ? void 0 : newInstance.leaflet;
+                var parent_13 = (_h = instance.parent) === null || _h === void 0 ? void 0 : _h.leaflet;
+                var control = instance === null || instance === void 0 ? void 0 : instance.leaflet;
+                var controlProps = nextProps;
+                var newInstance = createInstance(type, nextProps, updatePayload.rootContainer, updatePayload.hostContext, internalHandle);
+                var newControl = newInstance === null || newInstance === void 0 ? void 0 : newInstance.leaflet;
                 // stateful control, default behavior
                 if (!controlProps.hasOwnProperty('mutable') || controlProps.mutable) {
                     if (control.getState && newControl.setState) {
-                        const oldState = control.getState();
+                        var oldState = control.getState();
                         newControl.setState(oldState);
                     }
-                    parent.removeControl(control);
-                    parent.addControl(newControl);
+                    parent_13.removeControl(control);
+                    parent_13.addControl(newControl);
                 }
                 // standard control
                 else {
@@ -757,7 +768,7 @@ const hostConfig = {
     /**
      * This method should mutate the `container` root node and remove all children from it.
      */
-    clearContainer: (container) => {
+    clearContainer: function (container) {
     },
     // -------------------
     // Hydration Methods
@@ -796,21 +807,21 @@ const hostConfig = {
     // didNotFindHydratableTextInstance: (parentType, parentProps, parentInstance, text) => { },
     // didNotFindHydratableSuspenseInstance: (parentType, parentProps, parentInstance) => { },
 };
-const setProps = function (leaflet, props) {
-    const keys = Object.keys(props);
-    keys.forEach((key) => {
+var setProps = function (leaflet, props) {
+    var keys = Object.keys(props);
+    keys.forEach(function (key) {
         if ((0, lodash_1.isFunction)(props[key]) && leaflet.on) {
-            const leafletKey = key.startsWith('on') ? key.substr(2).toLocaleLowerCase('en-US') : key;
+            var leafletKey = key.startsWith('on') ? key.substr(2).toLocaleLowerCase('en-US') : key;
             leaflet.on(leafletKey, props[key]);
         }
-        const setter = 'set' + key[0].toLocaleUpperCase('en-US') + (key.length > 1 ? key.substr(1) : '');
+        var setter = 'set' + key[0].toLocaleUpperCase('en-US') + (key.length > 1 ? key.substr(1) : '');
         if (leaflet[setter] && (0, lodash_1.isFunction)(leaflet[setter])) {
             leaflet[setter](props[key]);
         }
     });
 };
-const propsChanged = (oldProps, nextProps) => {
-    const isEqual = (0, lodash_1.isEqualWith)(oldProps, nextProps, (a, b) => {
+var propsChanged = function (oldProps, nextProps) {
+    var isEqual = (0, lodash_1.isEqualWith)(oldProps, nextProps, function (a, b) {
         // non-memoized functions should not result in layer re-renders, compare function bodies instead
         if ((0, lodash_1.isFunction)(a) || (0, lodash_1.isFunction)(b)) {
             return a.toString() === b.toString();
@@ -818,11 +829,11 @@ const propsChanged = (oldProps, nextProps) => {
     });
     return !isEqual;
 };
-const renderer = (0, react_reconciler_1.default)(hostConfig);
+var renderer = (0, react_reconciler_1.default)(hostConfig);
 exports.default = {
-    render: (reactElement, domElement, jsxRenderer, callback) => {
+    render: function (reactElement, domElement, jsxRenderer, callback) {
         contentRenderer = jsxRenderer;
-        let container;
+        var container;
         if (instances.has(domElement)) {
             container = instances.get(domElement);
         }
