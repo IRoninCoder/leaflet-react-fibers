@@ -1,0 +1,66 @@
+{
+  "name": "leaflet-react-fibers",
+  "version": "1.0.0",
+  "description": "A high performance react reconciler for [leafletjs](https://www.leafletjs.com)",
+  "author": "ironincoder <ironincoder@gmail.com>",
+  "homepage": "https://github.com/IRoninCoder/leaflet-react-fibers#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "files": [
+    "lib/index.ts"
+  ],
+  "directories": {
+    "lib": "lib",
+    "dist": "dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IRoninCoder/leaflet-react-fibers.git"
+  },
+  "keywords": [
+    "leaflet",
+    "react",
+    "fibers",
+    "leaflet-jsx",
+    "react-leaflet",
+    "leaflet-react"
+  ],
+  "scripts": {
+    "build": "mkdir -p dist && cp -p lib/*.css dist && tsc",
+    "lint": "eslint --fix",
+    "test": "jest",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "bugs": {
+    "url": "https://github.com/IRoninCoder/leaflet-react-fibers/issues"
+  },
+  "dependencies": {
+    "leaflet": "^1.7.1",
+    "lodash": "^4.17.21",
+    "react-reconciler": "^0.26.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.8",
+    "@storybook/addon-actions": "^6.3.10",
+    "@storybook/addon-essentials": "^6.3.10",
+    "@storybook/addon-links": "^6.3.10",
+    "@storybook/react": "^6.3.10",
+    "@testing-library/dom": "^8.11.1",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@types/jest": "^27.0.3",
+    "@types/leaflet": "^1.7.5",
+    "@types/lodash": "^4.14.178",
+    "@types/react-reconciler": "^0.26.4",
+    "babel-loader": "^8.0.0",
+    "eslint": "^7.32.0",
+    "jest": "^27.4.5",
+    "jsdom": "^19.0.0",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "ts-jest": "^27.1.2",
+    "typescript": "^4.4.3",
+    "webpack": "^5.0.0"
+  }
+}

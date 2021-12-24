@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2015",
+    "strict": true,
+    "sourceMap": false,
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationDir": "dist",
+    "outDir": "dist",
+    "jsx": "react-jsx"
+  },
+  "files": [
+    "lib/index.ts"
+  ],
+  "exclude": [
+    "<node_modules>",
+    "**/*.test.tsx",
+    "dist"
+  ]
+}
