@@ -5,13 +5,13 @@
 
 A high performance react reconciler for [leafletjs](https://www.leafletjs.com).
 
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/IRoninCoder/leaflet-react-fibers/blob/master/LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/IRoninCoder/leaflet-react-fibers/blob/main/LICENSE)
 
 </div>
 
 <div align="center"> 
-  <video>
-    <source src="https://github.com/IRoninCoder/leaflet-react-fibers/blob/main/stories/assets/leaflet-react-fibers.webm">
+  <video height="500" autoPlay>
+    <source src="https://github.com/IRoninCoder/leaflet-react-fibers/blob/main/stories/assets/leaflet-react-fibers.mp4">
     Your browser does not support the video tag.
   </video> 
 </div>
