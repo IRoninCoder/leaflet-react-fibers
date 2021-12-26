@@ -9,12 +9,19 @@ A high performance react reconciler for [leafletjs](https://www.leafletjs.com).
 
 </div>
 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/ironincoder/leaflet-react-fibers/main/stories/assets/leaflet-react-fibers.gif" />
+</div>
+
+<p></p>
 
 ## Features
 
 - Managed DOM using JSX trees
-- Extensible by design, supports stateful and stateless leaflet extensions
+- Extensible by design, supports stateful and stateless (standard) leaflet extensions
 - Mutability control out of the box, simply add `mutable={false}` to disable mutability on leaflet layers or controls
+- Control over your layer `z-index` out of the box via conditional JSX nodes
+- Automatic map sizing by  `maxBounds` or parent container size
 
 
 ## How to use
@@ -37,13 +44,14 @@ const Rectangle = () => {
 See `stories` for various examples.
 
 ### JSX renderer
-You must provide a JSX renderer when embeding HTML in `lfPopup` or `lfTooltip` otherwise their contents are ignored, this is by design:
+You must provide a JSX renderer when embedding HTML in `lfPopup` or `lfTooltip` otherwise their contents are ignored, this is by design:
 ```tsx
 import { LeafletMap, L } from "leaflet-react-fibers"
+import ReactDOM from "react-dom"
 
 const PopupInsideRectangle = () => {
   return (
-    <LeafletMap options={{ crs: L.CRS.Simple }}>
+    <LeafletMap options={{ crs: L.CRS.Simple }} jsxRenderer={ReactDOM.render}>
        <lfRectangle bounds={[[50, 50], [150, 100]]} options={{ fillColor: 'black' }} add={() => { console.log('added a rectangle layer') }}>
         <lfPopup latlng={[100, 100]} add={() => { console.log('added an popup layer') }}>
           <div>Hello world!</div>
@@ -55,6 +63,60 @@ const PopupInsideRectangle = () => {
 ```
 You do NOT have to use `ReactDOM`, any JSX renderer will suffice. 
 
+
+### Customization
+There are two customizatio techniques. First is the standard customization provided by the [leafletjs](https://www.leafletjs.com) and this requires a  map instance:
+```tsx
+<LeafletMap options={{ /* options here */ }} whenReady={(map) => console.log('Map is ready and we have an instance of the map passed in. Use it as you wish to customize etc...')}>
+  /* TODO layers */
+</LeafletMap>
+```
+
+Second customization technique is more advanced towards state management within your customized layers, controls or handlers. Instead of the standard customization you can opt in to customize this way:
+
+```tsx
+// extend the default control class
+type WatermarkControlParams = { controlImageWidth: number } & L.ControlOptions
+class WatermarkControl extends L.Control implements LeafletExtensions.Stateful<{ lastW: number }> {
+  controlImageWidth: number
+  private _renderer: JSXRenderer
+
+  // if you've provided a jsxRenderer in map props, then it'll be passed down here as an argument so you can use it to build jsx content
+  constructor({ controlImageWidth, jsxRenderer, ...options }: LeafletExtensions.Updatable<WatermarkControlParams>) {
+    super(options)
+    this.controlImageWidth = controlImageWidth
+    this._renderer = jsxRenderer
+  }
+
+  getState() {
+    return { lastW: this.controlImageWidth }
+  }
+
+  setState(state: { lastW: number }): void {
+    console.log(`WatermarkControl state is set to ${state.lastW}`)
+  }
+
+  onAdd(map: L.Map) {
+    const container = L.DomUtil.create('div')
+
+    this._renderer(
+      <img style={{
+        width: `${this.controlImageWidth}px`,
+        backgroundColor: 'rgba(255,255,255,0.6)',
+        borderRadius: '5px'
+      }} src='https://leafletjs.com/docs/images/logo.png' />,
+      container
+    )
+
+    return container
+  }
+
+  onRemove(map: L.Map) {
+    // Nothing to do here
+  }
+}
+```
+A few things are happening here. First is the ability to control the state within your customized control. The renderer will recognize that your customized control is stateful and will use `getState` and `setState` when your props change and the control needs to be re-rendered. Additionally a renderer is passed through to the constructor of the control, if it has been provided via map props.
 
 ## Development
 Clone this repository and simply run `yarn storybook` or `npm run storybook`.

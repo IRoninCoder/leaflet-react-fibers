@@ -25,6 +25,9 @@
     "react-leaflet",
     "leaflet-react"
   ],
+  "peerDependencies": {
+    "react": ">= 16.0.0"
+  },
   "scripts": {
     "build": "mkdir -p dist && cp -p lib/*.css dist && tsc",
     "lint": "eslint --fix",

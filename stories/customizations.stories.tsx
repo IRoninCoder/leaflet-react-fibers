@@ -1,5 +1,3 @@
-/// <reference types="../@types" />
-
 import React from 'react';
 import { ComponentMeta } from '@storybook/react';
 import L from 'leaflet'
@@ -71,7 +69,7 @@ class KittenLayer extends L.TileLayer {
 /** End a custom layer */
 
 /** Begin a custom control */
-// extend the default control class. Optionally add an onUpdate method to enable updating of this control when paramters change
+// extend the default control class
 type WatermarkControlParams = { controlImageWidth: number } & L.ControlOptions
 class WatermarkControl extends L.Control implements LeafletExtensions.Stateful<{ lastW: number }> {
   controlImageWidth: number
@@ -98,7 +96,7 @@ class WatermarkControl extends L.Control implements LeafletExtensions.Stateful<{
     this._renderer(
       <img style={{
         width: `${this.controlImageWidth}px`,
-        backgroundColor: 'rgba(255,255,255,0.6)',
+        backgroundColor: 'rgba(255,255,255,0.8)',
         borderRadius: '5px'
       }} src='https://leafletjs.com/docs/images/logo.png' />,
       container
@@ -132,23 +130,17 @@ declare global {
 // end of customizations, now we can use them
 
 const mapOpts: CustomMapOptions = {
-  crs: L.CRS.Simple,
   minZoom: 1,
   maxZoom: 10,
   zoom: 1,
-  zoomControl: false,
-  maxBoundsViscosity: 1,
-  attributionControl: false,
-  maxBounds: [[0, 0], [200, 200]]
+  maxBoundsViscosity: 1
 }
 
 export const RectangleKittenWatermarkAndHandler = ({ windowResizeHandlerEnabled, controlPosition, controlImageWidth }:
   { windowResizeHandlerEnabled: boolean, controlPosition: L.ControlPosition, controlImageWidth: number }) => {
   return (
     <LeafletMap options={mapOpts} jsxRenderer={ReactDOM.render} whenReady={(map) => console.log('Map is ready and we have an instance of the map passed in')}>
-      <lfRectangle bounds={[[50, 50], [150, 100]]} options={{ fillColor: 'black' }} onAdd={() => { console.log('added a rectangle layer') }} />
       <lfKittenLayer klass={KittenLayer} params={{ options: { bounds: mapOpts.maxBounds } }} onAdd={() => { console.log('added a custom layer named kitten layer') }} />
-      <lfRectangle bounds={[[60, 70], [140, 100]]} options={{ fillColor: 'blue' }} />
       <lfWaterMarkControl klass={WatermarkControl} params={{ position: controlPosition, controlImageWidth }} />
       <lfResizeHandler name="windowResize" klass={WindowResizeHandler} enabled={windowResizeHandlerEnabled} />
     </LeafletMap>

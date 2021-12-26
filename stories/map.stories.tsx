@@ -1,5 +1,3 @@
-/// <reference types="../@types" />
-
 import React from 'react';
 import { ComponentMeta } from '@storybook/react';
 import L from 'leaflet'
@@ -7,7 +5,6 @@ import L from 'leaflet'
 import './map.css'
 
 import LeafletMap from '../lib/map'
-import Screenshot from './assets/ddg-screenshot.png'
 import ReactDOM from 'react-dom';
 import { CustomMapOptions } from '../lib/types';
 
@@ -17,45 +14,36 @@ export default {
 } as ComponentMeta<typeof LeafletMap>;
 
 const mapOpts: CustomMapOptions = {
-  crs: L.CRS.Simple,
   minZoom: 1,
   maxZoom: 10,
   zoom: 1,
-  zoomControl: false,
-  maxBoundsViscosity: 1,
-  attributionControl: false
+  maxBoundsViscosity: 1
 }
 
 export const ImageWithPopup = ({ togglePopUp, lat, lng }: { togglePopUp: boolean, lat: number, lng: number }) => {
   return (
     <LeafletMap options={mapOpts} jsxRenderer={ReactDOM.render}>
       <lfPopup latlng={[lat, lng]} isOpen={togglePopUp} onAdd={() => { console.log('added a popup layer') }} ><div>Hello world!</div></lfPopup>
-      <lfImage imageUrl={Screenshot} bounds={[[-250, -250], [250, 250]]} onAdd={() => { console.log('added an image layer') }} />
+      <lfImage imageUrl="https://images.pexels.com/photos/9569798/pexels-photo-9569798.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" bounds={[[-250, -250], [250, 250]]} onAdd={() => { console.log('added an image layer') }} />
     </LeafletMap>
   )
 }
 ImageWithPopup.args = {
-  lat: 100,
-  lng: 100,
+  lat: 0,
+  lng: 0,
   togglePopUp: false
 }
 
-export const PopupInsideRectangle = () => {
+export const PopupAndTooltip = () => {
   return (
     <LeafletMap options={mapOpts} jsxRenderer={ReactDOM.render}>
-      <lfImage imageUrl={Screenshot} bounds={[[-250, -250], [250, 250]]} onAdd={() => { console.log('added an image layer') }} />
-      <lfRectangle bounds={[[50, 50], [150, 100]]} options={{ fillColor: 'black' }} onAdd={() => { console.log('added a rectangle layer') }}>
+      <lfImage imageUrl="https://images.pexels.com/photos/9569798/pexels-photo-9569798.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" bounds={[[-250, -250], [250, 250]]} onAdd={() => { console.log('added an image layer') }} />
+
+      <lfRectangle bounds={[[10, 0], [50, 100]]} options={{ fillColor: 'red' }} onAdd={() => { console.log('added a rectangle layer') }}>
         <lfPopup latlng={[100, 100]} onAdd={() => { console.log('added a popup layer') }}><div>Hello world!</div></lfPopup>
       </lfRectangle>
-    </LeafletMap>
-  )
-}
 
-export const TooltipInsideRectangle = () => {
-  return (
-    <LeafletMap options={mapOpts} jsxRenderer={ReactDOM.render}>
-      <lfImage imageUrl={Screenshot} bounds={[[-250, -250], [250, 250]]} onAdd={() => { console.log('added an image layer') }} />
-      <lfRectangle bounds={[[50, 50], [150, 100]]} options={{ fillColor: 'black' }} onAdd={() => { console.log('added a rectangle layer') }}>
+      <lfRectangle bounds={[[10, -20], [50, -120]]} options={{ fillColor: 'red' }} onAdd={() => { console.log('added a rectangle layer') }}>
         <lfTooltip onAdd={() => { console.log('added a tooltip') }}><div>Hello world!</div></lfTooltip>
       </lfRectangle>
     </LeafletMap>
@@ -64,16 +52,16 @@ export const TooltipInsideRectangle = () => {
 
 export const RectangleWithMarker = () => {
   return (
-    <LeafletMap options={mapOpts}>
-      <lfRectangle bounds={[[50, 50], [150, 100]]} options={{ fillColor: 'black' }} onAdd={() => { console.log('added a rectangle layer') }} />
-      <lfMarker latlng={[75, 75]} onAdd={() => { console.log('added an marker layer') }} />
+    <LeafletMap options={mapOpts} whenReady={(map) => map.flyToBounds([[0, 50], [50, 100]])}>
+      <lfRectangle bounds={[[0, 50], [50, 100]]} options={{ fillColor: 'black' }} onAdd={() => { console.log('added a rectangle layer') }} />
+      <lfMarker latlng={[25, 55]} onAdd={() => { console.log('added an marker layer') }} />
     </LeafletMap>
   )
 }
 
 export const Tiles = () => {
   return (
-    <LeafletMap options={mapOpts}>
+    <LeafletMap options={{ ...mapOpts, zoom: 4 }} >
       <lfTiles urlTemplate='https://tile.openstreetmap.org/{z}/{x}/{y}.png' options={{
         tileSize: 512,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -84,9 +72,9 @@ export const Tiles = () => {
 
 export const TilesWMS = () => {
   return (
-    <LeafletMap options={mapOpts}>
-      <lfTilesWMS baseUrl="http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi" options={{
-        layers: 'nexrad-n0r-900913',
+    <LeafletMap options={{ ...mapOpts, zoom: 4 }}>
+      <lfTilesWMS baseUrl="http://ows.mundialis.de/services/service?" options={{
+        layers: 'TOPO-OSM-WMS',
         format: 'image/png',
         transparent: true,
         attribution: "Weather data © 2012 IEM Nexrad"
@@ -97,7 +85,7 @@ export const TilesWMS = () => {
 
 export const VideoPolylinePolygonAndCircle = () => {
   return (
-    <LeafletMap options={mapOpts}>
+    <LeafletMap options={mapOpts} whenReady={(map) => map.flyToBounds([[10, 300], [200, 100]])}>
       <lfVideo video="https://www.mapbox.com/bites/00188/patricia_nasa.webm" bounds={[[10, 300], [200, 100]]} />
       <lfPolyline latlngs={[
         [45.51, 122.68],
@@ -109,7 +97,7 @@ export const VideoPolylinePolygonAndCircle = () => {
         [47.77, 142.43],
         [54.04, 218.2]
       ]} />
-      <lfCircle latlng={[100, 100]} />
+      <lfCircle latlng={[50, 100]} options={{radius:900000}} />
     </LeafletMap>
   )
 }
@@ -173,7 +161,7 @@ export const Grid = () => {
 
 export const LayerGroup = () => {
   return (
-    <LeafletMap options={mapOpts}>
+    <LeafletMap options={mapOpts} whenReady={(map) => map.panTo([100, 200])}>
       <lfLayerGroup>
         <lfRectangle bounds={[[0, 0], [100, 200]]} options={{ fillColor: 'black' }} />
         <lfRectangle bounds={[[0, 0], [110, 210]]} options={{ fillColor: 'black' }} />
@@ -190,59 +178,90 @@ export const LayerGroup = () => {
   )
 }
 
-export const ConditionalLayerFirst = ({ isRedVisible }) => {
+
+export const FromLeafletHomePage = ({ togglePopUp }: { togglePopUp: boolean }) => {
   return (
-    <LeafletMap options={mapOpts}>
+    <LeafletMap options={{ center: [51.505, -0.09], zoom: 13 }} jsxRenderer={ReactDOM.render}>
+
+      <lfTiles
+        urlTemplate='https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
+        options={{
+          maxZoom: 18,
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+            'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+          id: 'mapbox/streets-v11',
+          tileSize: 512,
+          zoomOffset: -1
+        }}></lfTiles>
+
+      <lfMarker latlng={[51.5, -0.09]}>
+        <lfPopup isOpen={togglePopUp}>
+          <div>
+            <b>Hello world!</b><br />I am a popup.
+          </div>
+        </lfPopup>
+      </lfMarker>
+
+      <lfCircle latlng={[51.508, -0.11]} options={{
+        radius: 500,
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5
+      }}>
+        <lfPopup>
+          <span>I am a circle.</span>
+        </lfPopup>
+      </lfCircle>
+
+      <lfPolygon latlngs={[
+        [51.509, -0.08],
+        [51.503, -0.06],
+        [51.51, -0.047]
+      ]}>
+        <lfPopup>
+          <span>I am a polygon.</span>
+        </lfPopup>
+      </lfPolygon>
+
+    </LeafletMap>
+  )
+}
+FromLeafletHomePage.args = {
+  togglePopUp: false
+}
+
+export const ConditionalLayer = ({ isRedVisible, z }) => {
+  return (
+    <LeafletMap options={mapOpts} whenReady={(map) => map.flyToBounds([[0, 0], [110, 210]])}>
       <lfLayerGroup>
-        {isRedVisible && <lfRectangle bounds={[[0, 0], [110, 210]]} options={{ fillColor: 'red', fillOpacity: 1 }} />}
+        {isRedVisible && z === 'first' && <lfRectangle bounds={[[0, 0], [110, 210]]} options={{ fillColor: 'red', fillOpacity: 1 }} />}
         <lfRectangle bounds={[[10, 0], [100, 300]]} options={{ fillColor: 'black' }} />
+        {isRedVisible && z === 'middle' && <lfRectangle bounds={[[0, 0], [110, 210]]} options={{ fillColor: 'red', fillOpacity: 1 }} />}
         <lfRectangle bounds={[[50, 50], [10, 220]]} options={{ fillColor: 'black', fillOpacity: 1 }} />
+        {isRedVisible && z === 'last' && <lfRectangle bounds={[[0, 0], [110, 210]]} options={{ fillColor: 'red', fillOpacity: 1 }} />}
       </lfLayerGroup>
     </LeafletMap>
   )
 }
-ConditionalLayerFirst.args = {
-  isRedVisible: false
+ConditionalLayer.args = {
+  isRedVisible: false,
+  z: 'first'
+}
+ConditionalLayer.argTypes = {
+  z: {
+    options: ['first', 'middle', 'last'],
+    control: { type: 'select' }
+  }
 }
 
-export const ConditionalLayerMiddle = ({ isRedVisible }) => {
+export const Mutability = ({ color, mutable }) => {
   return (
-    <LeafletMap options={mapOpts}>
-      <lfLayerGroup>
-        <lfRectangle bounds={[[10, 0], [100, 300]]} options={{ fillColor: 'black' }} />
-        {isRedVisible && <lfRectangle bounds={[[0, 0], [110, 210]]} options={{ fillColor: 'red', fillOpacity: 1 }} />}
-        <lfRectangle bounds={[[50, 50], [10, 220]]} options={{ fillColor: 'black', fillOpacity: 1 }} />
-      </lfLayerGroup>
-    </LeafletMap>
-  )
-}
-ConditionalLayerMiddle.args = {
-  isRedVisible: false
-}
-
-export const ConditionalLayerLast = ({ isRedVisible }) => {
-  return (
-    <LeafletMap options={mapOpts}>
-      <lfLayerGroup>
-        <lfRectangle bounds={[[10, 0], [100, 300]]} options={{ fillColor: 'black' }} />
-        <lfRectangle bounds={[[50, 50], [10, 220]]} options={{ fillColor: 'black', fillOpacity: 1 }} />
-        {isRedVisible && <lfRectangle bounds={[[0, 0], [110, 210]]} options={{ fillColor: 'red', fillOpacity: 1 }} />}
-      </lfLayerGroup>
-    </LeafletMap>
-  )
-}
-ConditionalLayerLast.args = {
-  isRedVisible: false
-}
-
-export const RectangleMutable = ({ color, mutable }) => {
-  return (
-    <LeafletMap options={mapOpts}>
+    <LeafletMap options={mapOpts} whenReady={(map) => map.panTo([100, 300])}>
       <lfRectangle bounds={[[10, 0], [100, 300]]} options={{ fillColor: color }} mutable={mutable} />
     </LeafletMap>
   )
 }
-RectangleMutable.args = {
+Mutability.args = {
   color: 'black',
   mutable: true
 }
