@@ -9,8 +9,11 @@ A high performance react reconciler for [leafletjs](https://www.leafletjs.com).
 
 </div>
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/ironincoder/leaflet-react-fibers/main/stories/assets/leaflet-react-fibers.gif" />
+<div align="center"> 
+  <video>
+    <source src="https://raw.githubusercontent.com/ironincoder/leaflet-react-fibers/main/stories/assets/leaflet-react-fibers.webm" type="video/webm">
+    Your browser does not support the video tag.
+  </video> 
 </div>
 
 <p></p>
