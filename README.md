@@ -11,7 +11,7 @@ A high performance react reconciler for [leafletjs](https://www.leafletjs.com).
 
 <div align="center"> 
   <video height="500" autoPlay>
-    <source src="https://github.com/IRoninCoder/leaflet-react-fibers/blob/main/stories/assets/leaflet-react-fibers.mp4">
+    <source src="https://github.com/IRoninCoder/leaflet-react-fibers/raw/main/stories/assets/leaflet-react-fibers.mp4">
     Your browser does not support the video tag.
   </video> 
 </div>
