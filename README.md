@@ -3,10 +3,14 @@
 
 <div align="center">
 
-A high performance react reconciler for [leafletjs](https://www.leafletjs.com).
+A high performance react reconciler for leafletjs https://www.leafletjs.com
 
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/IRoninCoder/leaflet-react-fibers/blob/main/LICENSE)
 
+</div>
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/IRoninCoder/leaflet-react-fibers/main/leaflet-react-fibers.gif" />
 </div>
 
 ## Features
