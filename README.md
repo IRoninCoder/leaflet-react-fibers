@@ -73,7 +73,10 @@ There are two customizatio techniques. First is the standard customization provi
 Second customization technique is more advanced towards state management within your customized layers, controls or handlers. Instead of the standard customization you can opt in to customize this way:
 
 ```tsx
-// extend the default control class
+import { JSXRenderer, LeafletIntrinsicElements, LeafletExtensions } from "leaflet-react-fibers"
+import ReactDOM from 'react-dom'
+
+// 1. A new control extends a control class
 type WatermarkControlParams = { controlImageWidth: number } & L.ControlOptions
 class WatermarkControl extends L.Control implements LeafletExtensions.Stateful<{ lastW: number }> {
   controlImageWidth: number
@@ -113,8 +116,28 @@ class WatermarkControl extends L.Control implements LeafletExtensions.Stateful<{
     // Nothing to do here
   }
 }
+
+// 2. A component
+export const Watermark = ({ position }: { position: L.ControlPosition }) => {
+  return (
+    <LeafletMap options={{ zoom: 1 }} jsxRenderer={ReactDOM.render}>
+      <lfWaterMarkControl klass={WatermarkControl} params={{ position, controlImageWidth: 200 }} />
+    </LeafletMap>
+  )
+}
+
+// 3. Global JSX markup extension
+declare global {
+  interface CustomLeafletElements extends JSX.Element, LeafletIntrinsicElements {
+    lfWaterMarkControl: LeafletExtensions.Control<WatermarkControl, WatermarkControlParams>
+  }
+
+  namespace JSX {
+    interface IntrinsicElements extends CustomLeafletElements { }
+  }
+}
 ```
-A few things are happening here. First is the ability to control the state within your customized control. The renderer will recognize that your customized control is stateful and will use `getState` and `setState` when your props change and the control needs to be re-rendered. Additionally a renderer is passed through to the constructor of the control, if it has been provided via map props.
+A few things are happening here. First is the ability to control the state within your customized control. The renderer will recognize that your customized control is stateful and will use `getState` and `setState` when your props change and the control needs to be re-rendered. Additionally a renderer is passed through to the constructor of the control, if it has been provided via map props. 
 
 ## Development
 Clone this repository and simply run `yarn storybook` or `npm run storybook`.
