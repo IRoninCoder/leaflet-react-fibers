@@ -139,5 +139,10 @@ declare global {
 ```
 A few things are happening here. First is the ability to control the state within your customized control. The renderer will recognize that your customized control is stateful and will use `getState` and `setState` when your props change and the control needs to be re-rendered. Additionally a renderer is passed through to the constructor of the control, if it has been provided via map props. 
 
+## Similar work
+None of the libraries mentioned below provide mutability control out of the box and state management features.
+1. [react-leaflet-fiber](https://github.com/umar-ahmed/react-leaflet-fiber) another fiber implementation.
+2. [react-leaflet](https://github.com/PaulLeCam/react-leaflet) react wrapper for leaflet which comes with hooks.
+
 ## Development
 Clone this repository and simply run `yarn storybook` or `npm run storybook`.
