@@ -103,7 +103,7 @@ export const VideoPolylinePolygonAndCircle = () => {
 }
 
 export const CircleMarkerAndSVG = () => {
-  var svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svgElement.setAttribute('xmlns', "http://www.w3.org/2000/svg");
   svgElement.setAttribute('viewBox', "0 0 200 200");
   svgElement.innerHTML = '<rect width="200" height="200"/><rect x="75" y="23" width="50" height="50" style="fill:red"/><rect x="75" y="123" width="50" height="50" style="fill:#0013ff"/>';
@@ -116,7 +116,7 @@ export const CircleMarkerAndSVG = () => {
   )
 }
 
-export const GeoJSON = ({ geoJSON }) => {
+export const GeoJSON = ({ geoJSON }: any) => {
   return (
     <LeafletMap options={{ ...mapOpts, maxBounds: undefined, zoom: 6 }} whenReady={(m) => m.setView([0, 102])}>
       <lfGeoJSON geojson={geoJSON} />
@@ -230,7 +230,7 @@ FromLeafletHomePage.args = {
   togglePopUp: false
 }
 
-export const ConditionalLayer = ({ isRedVisible, z }) => {
+export const ConditionalLayer = ({ isRedVisible, z }: any) => {
   return (
     <LeafletMap options={mapOpts} whenReady={(map) => map.flyToBounds([[0, 0], [110, 210]])}>
       <lfLayerGroup>
@@ -254,7 +254,7 @@ ConditionalLayer.argTypes = {
   }
 }
 
-export const Mutability = ({ color, mutable }) => {
+export const Mutability = ({ color, mutable }: any) => {
   return (
     <LeafletMap options={mapOpts} whenReady={(map) => map.panTo([100, 300])}>
       <lfRectangle bounds={[[10, 0], [100, 300]]} options={{ fillColor: color }} mutable={mutable} />

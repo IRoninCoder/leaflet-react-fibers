@@ -5,12 +5,12 @@
 
 A high performance react reconciler for leafletjs https://www.leafletjs.com
 
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/IRoninCoder/leaflet-react-fibers/blob/main/LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/chickencoding123/leaflet-react-fibers/blob/main/LICENSE)
 
 </div>
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/IRoninCoder/leaflet-react-fibers/main/leaflet-react-fibers.gif" />
+  <img src="https://raw.githubusercontent.com/chickencoding123/leaflet-react-fibers/main/leaflet-react-fibers.gif" />
 </div>
 
 ## Features
@@ -145,4 +145,4 @@ None of the libraries mentioned below provide mutability control out of the box 
 2. [react-leaflet](https://github.com/PaulLeCam/react-leaflet) react wrapper for leaflet which comes with hooks.
 
 ## Development
-Clone this repository and simply run `yarn storybook` or `npm run storybook`.
+Clone this repository and simply run `npm run storybook`.

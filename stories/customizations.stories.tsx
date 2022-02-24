@@ -46,7 +46,7 @@ class WindowResizeHandler extends L.Handler {
   _windowResize(ev) {
     console.log('You just reized the window')
   }
-};
+}
 /** End a custom handler */
 
 /** Begin a custom layer */
@@ -111,7 +111,7 @@ class WatermarkControl extends L.Control implements LeafletExtensions.Stateful<{
 }
 /** End a custom control */
 
-/** (Typescript) Modify the global namespace to add your custom JSX elements that you can use with react-leaflet-fibers */
+/** (Typescript) Modify the global namespace to add your custom JSX elements that you can use with leaflet-react-fibers */
 declare global {
   /** Extends the LeafletIntrinsicElements with your own custom elements */
   // (Optional) specify the P (aka props or second generic parameter), default from base class or even don't specify it
@@ -123,6 +123,7 @@ declare global {
 
   /** Tell JSX to use your extended interface instead of LeafletIntrinsicElements */
   namespace JSX {
+    // eslint-disable-next-line
     interface IntrinsicElements extends CustomLeafletElements { }
   }
 }
