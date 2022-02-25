@@ -1,13 +1,10 @@
 name: CD
 
 on:
-  pull_request:
-    types: [closed]
-    branches: [main]
+  workflow_dispatch: # manual run
 
 jobs:
   cd:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -57,18 +54,18 @@ jobs:
         run: |
           npm run build
 
-      - name: Version and publish, if main
+      - name: Version and publish
         run: |
           npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Update gh-pages, if main
+      - name: Update gh-pages
         run: |
-          blue='\033[0;34m'
-          green='\033[0;32m'
-          nocolor='\033[0m'
+          blue="\033[0;34m"
+          green="\033[0;32m"
+          nocolor="\033[0m"
           docs_dir=docs
           branch=gh-pages
           msg="updated docs for $(git describe --tags --abbrev=0)"
