@@ -1,7 +1,8 @@
 {
   "ignorePatterns": [
     "*.d.ts",
-    "dist"
+    "dist",
+    "docs"
   ],
   "env": {
     "browser": true,
@@ -33,6 +34,7 @@
     "@typescript-eslint/no-explicit-any": "off",
     "space-before-function-paren": "off",
     "@typescript-eslint/no-namespace": "off",
-    "@typescript-eslint/no-unused-vars": "off"
+    "@typescript-eslint/no-unused-vars": "off",
+    "react/jsx-key": "off"
   }
 }

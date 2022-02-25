@@ -55,6 +55,8 @@
     "@storybook/addon-essentials": "^6.3.10",
     "@storybook/addon-links": "^6.3.10",
     "@storybook/addons": "^6.4.19",
+    "@storybook/builder-webpack5": "^6.4.19",
+    "@storybook/manager-webpack5": "^6.4.19",
     "@storybook/react": "^6.3.10",
     "@storybook/theming": "^6.4.19",
     "@testing-library/dom": "^8.11.1",

@@ -1,6 +1,5 @@
 import React from 'react';
 import { ComponentMeta } from '@storybook/react';
-import L from 'leaflet'
 
 import './map.css'
 
