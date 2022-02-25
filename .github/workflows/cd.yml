@@ -68,32 +68,38 @@ jobs:
           green="\033[0;32m"
           nocolor="\033[0m"
           docs_dir=docs
-          branch=../gh-pages
+          branch=gh-pages
           root="$(echo $PWD)"
           msg="updated docs for $(git describe --tags --abbrev=0)"
 
           echo -e "${blue}Prepare work directory...${nocolor}"
+          # ----------------------------------------------------------------
           rm -rf $branch
 
           echo -e "${blue}Generating site...${nocolor}"
+          # ----------------------------------------------------------------
           npm run build-storybook
 
           echo -e "${blue}Checking out $branch...${nocolor}"
-          git worktree add -f $branch
+          git worktree add -B $branch ../$branch origin/$branch
 
           echo -e "${blue}Updating site in $docs_dir directory...${nocolor}"
-          cd $branch
-          git pull origin $branch --ff-only
+          # ----------------------------------------------------------------
+          cd ../$branch
+          git pull origin $branch --merge
           rm -rf $docs_dir
           mv $root/$docs_dir .
 
           echo -e "${blue}Deploying $branch branch...${nocolor}"
+          # ----------------------------------------------------------------
           git add --all
           git commit --no-verify -m "$msg"
           git push origin $branch
 
           echo -e "${blue}Cleaning up...${nocolor}"
-          cd ..
-          git worktree remove -f "$PWD/$branch"
+          # ----------------------------------------------------------------
+          cd $root
+          git worktree remove -f ../$branch
 
           echo -e "${green}Success!${nocolor}"
+          # ----------------------------------------------------------------
