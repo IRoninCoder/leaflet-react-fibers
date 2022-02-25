@@ -6,7 +6,7 @@ import {
   LayersControlEventHandlerFn, LayerEventHandlerFn, LeafletEventHandlerFn, ResizeEventHandlerFn,
   DragEndEventHandlerFn, ErrorEventHandlerFn, LeafletKeyboardEventHandlerFn,
   LeafletMouseEventHandlerFn, LocationEventHandlerFn, PopupEventHandlerFn, TileErrorEventHandlerFn,
-  TileEventHandlerFn, TooltipEventHandlerFn, ZoomAnimEventHandlerFn,
+  TileEventHandlerFn, TooltipEventHandlerFn, ZoomAnimEventHandlerFn
 } from 'leaflet'
 
 /** React standard event names as opposed to leaflet's LeafletEventHandlerFnMap */
@@ -76,15 +76,12 @@ export interface LeafletReactFiberEvents {
   onTileError?: TileErrorEventHandlerFn | undefined;
 }
 
-
 /** A single child with optional properties */
 type Child<T> = React.ReactElement<Partial<{ [K in keyof T]: T[K] }>>
 /** One or more JSX children elements */
 type IntrinsicElementChildren<T> = { children?: Child<T> | Child<T>[] }
 /** One JSX children elements */
 type IntrinsicElementChild<T> = { children?: Child<T> }
-/** Common types for all layer JSX elements */
-type LayerElementCommon<T> = React.RefAttributes<T> & IntrinsicElementChild<IntrinsicLayerAdditions> & LeafletReactFiberEvents & { mutable?: boolean }
 
 interface IntrinsicLayerAdditions extends JSX.Element {
   /** A leaflet popup */
@@ -92,6 +89,9 @@ interface IntrinsicLayerAdditions extends JSX.Element {
   /** A leaflet tooltip */
   lfTooltip: { options?: TooltipOptions, source?: Layer, children: JSX.Element, isOpen?: boolean } & LeafletReactFiberEvents
 }
+
+/** Common types for all layer JSX elements */
+type LayerElementCommon<T> = React.RefAttributes<T> & IntrinsicElementChild<IntrinsicLayerAdditions> & LeafletReactFiberEvents & { mutable?: boolean }
 
 /** Intrinsic layer defintions to extend JSX */
 interface IntrinsicLayers extends JSX.Element {
@@ -135,16 +135,16 @@ export type JSXRenderer = (element: JSX.Element, container: HTMLElement) => Elem
 
 /** Leaflet customization types. Use them to help with augmenting the JSX namespace */
 export namespace LeafletExtensions {
-  /** Updatable class constructore wrapper type E.g. 
+  /** Updatable class constructore wrapper type E.g.
    * ```ts
    * constructor(params: Updatable<MyClassParams>) { }
    * ```
    * */
-  export type Updatable<Params = {}> = Params & { jsxRenderer?: JSXRenderer }
-  export type Control<Klass extends L.Control = any, Params = {}> = { klass: new (...args: any) => Klass, params: { position: L.ControlPosition, mutable?: boolean } & Params & IntrinsicElementChild<any> }
-  export type Layer<Klass extends L.Layer = any, Params = {}> = { klass: new (...args: any) => Klass, params?: Params } & LayerElementCommon<Klass>
+  export type Updatable<Params = Record<string, unknown>> = Params & { jsxRenderer?: JSXRenderer }
+  export type Control<Klass extends L.Control = any, Params = Record<string, unknown>> = { klass: new (...args: any) => Klass, params: { position: L.ControlPosition, mutable?: boolean } & Params & IntrinsicElementChild<any> }
+  export type Layer<Klass extends L.Layer = any, Params = Record<string, unknown>> = { klass: new (...args: any) => Klass, params?: Params } & LayerElementCommon<Klass>
   export type Handler<Klass extends L.Handler = any> = { name: string, klass: new (...args: any) => Klass, enabled: boolean }
-  /** Stateful implementation interface for custom layers and controls E.g. 
+  /** Stateful implementation interface for custom layers and controls E.g.
    * ```ts
    * class MyLayer extends L.Layer implements LeafletExtensions.Stateful<MyStateClass>
    * ```
@@ -166,11 +166,11 @@ export interface IntrinsicMap extends JSX.Element {
  * interface CustomizedLeafletIntrinsics extends LeafletIntrinsicElements {
  *   // your custom elements and their props, all tag names must start with "lf" E.g. lfLayer: {name: string}
  * }
- * 
+ *
  * declare global {
  *   namespace JSX {
  *     interface IntrinsicElements extends CustomizedLeafletIntrinsics { }
- *   }  
+ *   }
  * }
  * ```
  */
@@ -178,6 +178,7 @@ export interface LeafletIntrinsicElements extends IntrinsicMap, IntrinsicLayers,
 
 declare global {
   namespace JSX {
+    // eslint-disable-next-line
     interface IntrinsicElements extends LeafletIntrinsicElements { }
   }
 }

@@ -2,8 +2,8 @@
   "name": "leaflet-react-fibers",
   "version": "1.0.3",
   "description": "A high performance react reconciler for [leafletjs](https://www.leafletjs.com)",
-  "author": "ironincoder <ironincoder@gmail.com>",
-  "homepage": "https://github.com/IRoninCoder/leaflet-react-fibers#readme",
+  "author": "chickencoding123",
+  "homepage": "https://github.com/chickencoding123/leaflet-react-fibers#readme",
   "license": "MIT",
   "main": "dist/index.js",
   "directories": {
@@ -15,7 +15,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IRoninCoder/leaflet-react-fibers.git"
+    "url": "git+https://github.com/chickencoding123/leaflet-react-fibers.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chickencoding123/leaflet-react-fibers/issues"
   },
   "keywords": [
     "leaflet",
@@ -29,14 +32,13 @@
     "react": ">= 16.0.0"
   },
   "scripts": {
+    "prepare": "husky install && npx commitizen init cz-conventional-changelog --force",
     "build": "mkdir -p dist && cp -p lib/*.css dist && tsc",
-    "lint": "eslint --fix",
-    "test": "jest",
+    "lint": "eslint lib/*.ts* stories/*.ts* --fix",
+    "test": "jest --runInBand",
+    "test-ci": "jest --coverage",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
-  },
-  "bugs": {
-    "url": "https://github.com/IRoninCoder/leaflet-react-fibers/issues"
+    "build-storybook": "build-storybook -o docs"
   },
   "dependencies": {
     "leaflet": "^1.7.1",
@@ -45,10 +47,14 @@
   },
   "devDependencies": {
     "@babel/core": "^7.15.8",
+    "@commitlint/cli": "^16.1.0",
+    "@commitlint/config-conventional": "^16.0.0",
     "@storybook/addon-actions": "^6.3.10",
     "@storybook/addon-essentials": "^6.3.10",
     "@storybook/addon-links": "^6.3.10",
+    "@storybook/addons": "^6.4.19",
     "@storybook/react": "^6.3.10",
+    "@storybook/theming": "^6.4.19",
     "@testing-library/dom": "^8.11.1",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
@@ -56,14 +62,35 @@
     "@types/leaflet": "^1.7.5",
     "@types/lodash": "^4.14.178",
     "@types/react-reconciler": "^0.26.4",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
     "babel-loader": "^8.0.0",
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.32.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-react": "^7.28.0",
+    "husky": "^7.0.4",
     "jest": "^27.4.5",
     "jsdom": "^19.0.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
+    "semantic-release": "^19.0.2",
     "ts-jest": "^27.1.2",
     "typescript": "^4.4.3",
     "webpack": "^5.0.0"
+  },
+  "engines": {
+    "node": ">= 14"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }

@@ -1,0 +1,100 @@
+name: CD
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  cd:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+          registry-url: "https://registry.npmjs.org"
+
+      # the "lockfileVersion": 2 in the package-lock.json fails for npm < 7.x
+      - name: Upgrade NPM
+        run: npm install -g npm@7.20.3
+
+      - name: Setup npm
+        run: |
+          yarn logout
+
+          echo "registry=https://registry.npmjs.org/" >> .npmrc
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
+
+          # https://github.com/lerna/lerna/issues/2788#issuecomment-774265338 basically make sure npm is setup correctly since exits with error if not
+          npm whoami
+
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Setup git
+        run: |
+          git config user.name "$ACTOR"
+          git config user.email "18017298+$ACTOR@users.noreply.github.com"
+          git remote set-url origin https://$ACTOR:$GITHUB_TOKEN@github.com/$ACTOR/leaflet-react-fibers
+
+        env:
+          ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: |
+          npm ci
+
+      - name: Build artifacts
+        run: |
+          npm run build
+
+      - name: Version and publish, if main
+        run: |
+          npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Update gh-pages, if main
+        run: |
+          blue='\033[0;34m'
+          green='\033[0;32m'
+          nocolor='\033[0m'
+          docs_dir=docs
+          branch=gh-pages
+          msg="updated docs for $(git describe --tags --abbrev=0)"
+
+          echo -e "${blue}Prepare work directory...${nocolor}"
+          rm -rf $branch
+
+          echo -e "${blue}Generating site...${nocolor}"
+          npm run build-storybook
+
+          echo -e "${blue}Checking out $branch...${nocolor}"
+          git worktree add -f $branch
+
+          echo -e "${blue}Updating site in $docs_dir directory...${nocolor}"
+          cd $branch
+          git pull origin $branch
+          rm -rf $docs_dir
+          mv ../$docs_dir .
+
+          echo -e "${blue}Deploying $branch branch...${nocolor}"
+          git add --all
+          git commit --no-verify -m "$msg"
+          git push origin $branch
+
+          echo -e "${blue}Cleaning up...${nocolor}"
+          cd ..
+          git worktree remove -f "$PWD/$branch"
+
+          echo -e "${green}Success!${nocolor}"
