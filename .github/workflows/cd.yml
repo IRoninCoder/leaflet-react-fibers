@@ -86,7 +86,7 @@ jobs:
           echo -e "${blue}Updating site in $docs_dir directory...${nocolor}"
           # ----------------------------------------------------------------
           cd ../$branch
-          git pull origin $branch --merge
+          git pull origin $branch --no-rebase
           rm -rf $docs_dir
           mv $root/$docs_dir .
 
