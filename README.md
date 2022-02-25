@@ -5,12 +5,8 @@
 
 A high performance react reconciler for leafletjs https://www.leafletjs.com
 
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/chickencoding123/leaflet-react-fibers/blob/main/LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/chickencoding123/leaflet-react-fibers/blob/main/LICENSE) [![npm](https://img.shields.io/npm/v/leaflet-react-fibers)](https://www.npmjs.com/package/leaflet-react-fibers) [![License](https://img.shields.io/npm/l/leaflet-react-fibers)](https://github.com/chickencoding123/leaflet-react-fibers/blob/main/LICENSE) [![bundlesize](https://img.badgesize.io/https:/unpkg.com/leaflet-react-fibers/dist/*.js?max=300000&compression=gzip)](https://unpkg.com/leaflet-react-fibers/dist/renderer.js)
 
-</div>
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/chickencoding123/leaflet-react-fibers/main/leaflet-react-fibers.gif" />
 </div>
 
 ## Features

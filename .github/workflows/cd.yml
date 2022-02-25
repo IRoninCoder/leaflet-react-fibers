@@ -68,7 +68,8 @@ jobs:
           green="\033[0;32m"
           nocolor="\033[0m"
           docs_dir=docs
-          branch=gh-pages
+          branch=../gh-pages
+          root="$(echo $PWD)"
           msg="updated docs for $(git describe --tags --abbrev=0)"
 
           echo -e "${blue}Prepare work directory...${nocolor}"
@@ -82,9 +83,9 @@ jobs:
 
           echo -e "${blue}Updating site in $docs_dir directory...${nocolor}"
           cd $branch
-          git pull origin $branch
+          git pull origin $branch --ff-only
           rm -rf $docs_dir
-          mv ../$docs_dir .
+          mv $root/$docs_dir .
 
           echo -e "${blue}Deploying $branch branch...${nocolor}"
           git add --all
