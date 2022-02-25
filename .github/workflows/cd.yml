@@ -56,7 +56,8 @@ jobs:
 
       - name: Version and publish
         run: |
-          npx semantic-release
+          # also skip git hooks, they do run against PRs already
+          HUSKY=0 npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
