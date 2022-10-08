@@ -1,7 +1,7 @@
 {
   "name": "leaflet-react-fibers",
   "version": "1.1.0",
-  "description": "A high performance react reconciler for [leafletjs](https://www.leafletjs.com)",
+  "description": "A high performance react library for [leafletjs](https://www.leafletjs.com)",
   "author": "chickencoding123",
   "homepage": "https://github.com/chickencoding123/leaflet-react-fibers#readme",
   "license": "MIT",

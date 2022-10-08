@@ -3,9 +3,11 @@
 
 <div align="center">
 
-A high performance react reconciler for leafletjs https://www.leafletjs.com
+A high performance react library for leafletjs https://www.leafletjs.com
 
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/chickencoding123/leaflet-react-fibers/blob/main/LICENSE) [![npm](https://img.shields.io/npm/v/leaflet-react-fibers)](https://www.npmjs.com/package/leaflet-react-fibers) [![License](https://img.shields.io/npm/l/leaflet-react-fibers)](https://github.com/chickencoding123/leaflet-react-fibers/blob/main/LICENSE)
+<img src="/assets/leaflet-react-fibers.png" style="width: 10rem; margin-bottom: 1rem" alt="leaflet-react-fibers logo" />
+
+[![npm](https://img.shields.io/npm/v/leaflet-react-fibers)](https://www.npmjs.com/package/leaflet-react-fibers) [![License](https://img.shields.io/npm/l/leaflet-react-fibers)](https://github.com/chickencoding123/leaflet-react-fibers/blob/main/LICENSE)
 
 </div>
 
