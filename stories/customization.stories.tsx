@@ -93,7 +93,7 @@ export default {
           `
 This story demonstrates the advanced customization that comes with this library.
 Specifically the ability to inject a JSX renderer into leaflet controls and layers to 
-simplify rendering content. Another aspect of this demonstration is state management.
+simplify rendering content. Another goal of this story is to demonstrate state management.
 Advanced leaflet customizations can benefit from a state management library.
 Third party state management is not requires when using this library.
         `
