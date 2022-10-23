@@ -1,9 +1,32 @@
 import L from 'leaflet'
 
+import { Instance } from './renderer-types'
 import { CustomMapOptions } from './catalog'
 
+/**
+ * Reorder a DOM element in-place. Returns true when in-place sort is successful.
+ * In some cases it is not possible because leaflet adds layers to different DOM elements.
+*/
+export const TryReorder = (childInstance: Instance, beforeChild: Instance) => {
+  let didReorder = false
+
+  const childAny = childInstance?.leaflet as any
+  const beforeChildAny = beforeChild?.leaflet as any
+  const element: HTMLElement | undefined = childAny?.getElement ? childAny.getElement() : childAny?.getContainer ? childAny.getContainer() : null
+  const elementBefore: HTMLElement | undefined = beforeChildAny?.getElement ? beforeChildAny.getElement() : beforeChildAny?.getContainer ? beforeChildAny.getContainer() : null
+
+  if (element?.parentElement && element.parentElement === elementBefore?.parentElement) {
+    element.parentElement.removeChild(element)
+    elementBefore.parentElement.insertBefore(element, elementBefore)
+
+    didReorder = true
+  }
+
+  return didReorder
+}
+
 /** Determine a size for a leaflet map inside a browser window */
-const setMapSize = (map: L.Map, container: HTMLElement, style?: Record<string, any>, maxBounds?: CustomMapOptions['maxBounds']) => {
+export const SetMapSize = (map: L.Map, container: HTMLElement, style?: Record<string, any>, maxBounds?: CustomMapOptions['maxBounds']) => {
   if (style?.width && style?.height) {
     // do nothing, it's already applied via spread operator in map.tsx
   } else if (maxBounds) {
@@ -27,5 +50,3 @@ const setMapSize = (map: L.Map, container: HTMLElement, style?: Record<string, a
 
   map.invalidateSize()
 }
-
-export default setMapSize

@@ -5,7 +5,7 @@ import './map.css'
 
 import Renderer from './renderer'
 import { CustomMapOptions, IntrinsicMapChildren, JSXRenderer } from './catalog'
-import SetMapSize from './set-map-size'
+import { SetMapSize } from './dom-helper'
 
 export const MapContext = React.createContext<{ map: L.Map | null }>({ map: null })
 

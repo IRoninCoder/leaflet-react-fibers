@@ -3,7 +3,7 @@ import L from 'leaflet'
 import { isFunction } from 'lodash'
 
 import { JSXRenderer, LeafletExtensions, LeafletIntrinsicElements } from '../catalog'
-import { Container, ElementProps, ElementType, HostContext, Instance } from '../types'
+import { Container, ElementProps, ElementType, HostContext, Instance } from '../renderer-types'
 import { Add, Get } from '../cache'
 
 import Marker from 'leaflet/dist/images/marker-icon.png'

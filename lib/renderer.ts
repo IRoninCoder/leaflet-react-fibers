@@ -3,9 +3,9 @@ import L from 'leaflet'
 import { isEqualWith, isFunction, noop } from 'lodash'
 
 import { JSXRenderer, LeafletIntrinsicElements } from './catalog'
-import { ElementProps, RenderHostConfigs } from './types'
+import { ElementProps, RenderHostConfigs } from './renderer-types'
 import { Add, Remove } from './cache'
-import TryReplace from './try-replace'
+import { TryReorder } from './dom-helper'
 
 import CreateInstance from './operations/create-instance'
 import CommitUpdate from './operations/commit-update'
@@ -67,7 +67,7 @@ const hostConfig: RenderHostConfigs = {
         isMutable = isMutable && groupProps.mutable
       }
     }
-    // TODO: BUG mutability is just broken. Also updating color of wyoming will shift it to the top of z-axis.
+
     if (isMutable && propsChanged(oldProps, newProps)) {
       return {
         rootContainer,
@@ -221,7 +221,7 @@ const hostConfig: RenderHostConfigs = {
     AppendInstance(parentInstance, childInstance)
 
     // Reorder the DOM, if possible
-    TryReplace(childInstance, beforeChild)
+    TryReorder(childInstance, beforeChild)
   },
 
   /**

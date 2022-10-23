@@ -4,9 +4,9 @@ import L from 'leaflet'
 
 import { Get } from '../cache'
 import { LeafletExtensions, LeafletIntrinsicElements } from '../catalog'
-import { Instance, ElementType, UpdatePayload, ElementProps } from '../types'
+import { Instance, ElementType, UpdatePayload, ElementProps } from '../renderer-types'
 import CreateInstance from './create-instance'
-import TryReplace from '../try-replace'
+import { TryReorder } from '../dom-helper'
 
 /** Switch popup/tooltip bindings to a new layer */
 const tryTransferLayerAdditions = (layer: L.Layer, newLayer: L.Layer) => {
@@ -105,8 +105,6 @@ const commitUpdate = (instance: Instance, updatePayload: UpdatePayload, type: El
 
           if (!newInstance) break
 
-          instance.leaflet = newInstance.leaflet
-
           const newLayer = newInstance.leaflet as L.Layer & Partial<LeafletExtensions.Statefull<any>>
 
           // Stateful layer
@@ -120,12 +118,14 @@ const commitUpdate = (instance: Instance, updatePayload: UpdatePayload, type: El
 
           // Configure new layer using the old layer
           tryTransferLayerAdditions(layer, newLayer)
-          TryReplace(instance, newInstance)
+          TryReorder(newInstance, instance)
 
           // Remove old layer when it is not a group because groups do not have a DOM. Remove on a group is a proxy call to remove layers
           if (instance.category !== 'layergroup' && instance.category !== 'featuregroup') {
             parent.removeLayer(layer)
           }
+
+          instance.leaflet = newInstance.leaflet
 
           break
         }

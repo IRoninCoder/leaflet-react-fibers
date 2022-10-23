@@ -1,7 +1,7 @@
 import L from 'leaflet'
 
 import { LeafletExtensions, LeafletIntrinsicElements } from '../catalog'
-import { Instance } from '../types'
+import { Instance } from '../renderer-types'
 
 const appendInstance = (parentInstance: Instance, childInstance: Instance) => {
   if (!childInstance) return
