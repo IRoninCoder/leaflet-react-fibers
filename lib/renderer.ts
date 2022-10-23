@@ -2,18 +2,20 @@ import ReactReconciler from 'react-reconciler'
 import L from 'leaflet'
 import { isEqualWith, isFunction, noop } from 'lodash'
 
-import { JSXRenderer, LeafletIntrinsicElements, LeafletExtensions } from './catalog'
+import { JSXRenderer, LeafletIntrinsicElements } from './catalog'
 import { ElementProps, RenderHostConfigs } from './types'
 import { Add, Remove } from './cache'
+import TryReplace from './try-replace'
 
-import createInstance from './operations/create-instance'
-import commitUpdate from './operations/commit-update'
+import CreateInstance from './operations/create-instance'
+import CommitUpdate from './operations/commit-update'
+import AppendInstance from './operations/append-instance'
 
 const hostConfig: RenderHostConfigs = {
   supportsMutation: true,
   supportsPersistence: false,
 
-  createInstance,
+  createInstance: CreateInstance,
 
   /**
   * Same as `createInstance`, but for text nodes. If your renderer doesn't support text nodes, you can throw here.
@@ -28,42 +30,7 @@ const hostConfig: RenderHostConfigs = {
    *
    * This method happens **in the render phase**. It can mutate `parentInstance` and `child`, but it must not modify any other nodes. It's called while the tree is still being built up and not connected to the actual tree on the screen.
   */
-  appendInitialChild: (parentInstance, childInstance) => {
-    if (!parentInstance || !childInstance) return
-
-    // Sync parent instance for future reference
-    childInstance.parent = parentInstance
-
-    if (parentInstance.category === 'map' && childInstance.category === 'handler') {
-      const parent = parentInstance.leaflet as L.Map & { [key: string]: L.Handler }
-      const handler = childInstance.leaflet as typeof L.Handler
-      const props = childInstance.props as LeafletExtensions.Handler
-      parent.addHandler(props.name, handler)
-      if (props.enabled) {
-        parent[props.name].enable()
-      } else {
-        parent[props.name].disable()
-      }
-      return
-    }
-
-    switch (parentInstance.category) {
-      case 'layergroup':
-      case 'featuregroup':
-      case 'map': {
-        switch (childInstance.category) {
-          default:
-            // special treatment needed for popups, tooltips
-            if (childInstance.type !== 'lfPopup' && childInstance.type !== 'lfTooltip') {
-              const child = childInstance.leaflet as L.Layer | L.Control
-              const parent = parentInstance.leaflet as L.Map
-              child.addTo(parent)
-            }
-            break
-        }
-      }
-    }
-  },
+  appendInitialChild: AppendInstance,
 
   /**
    * In this method, you can perform some final mutations on the `instance`. Unlike with `createInstance`, by the time `finalizeInitialChildren` is called, all the initial children have already been added to the `instance`, but the instance itself has not yet been connected to the tree on the screen.
@@ -86,7 +53,22 @@ const hostConfig: RenderHostConfigs = {
    * See the meaning of `rootContainer` and `hostContext` in the `createInstance` documentation.
    */
   prepareUpdate: (instance, type, { children: oldChilds, ...oldProps }, { children: newChilds, ...newProps }, rootContainer, hostContext) => {
-    if (propsChanged(oldProps, newProps)) {
+    let isMutable: boolean | undefined = true
+
+    // Mutable, default behavior
+    if (Object.prototype.hasOwnProperty.call(newProps, 'mutable')) {
+      isMutable = isMutable && newProps.mutable
+    }
+    // Verify if a parent group is mutable
+    if (instance?.parent?.category === 'layergroup' || instance?.parent?.category === 'featuregroup') {
+      const groupProps = instance.parent.props as LeafletIntrinsicElements['lfLayerGroup'] | LeafletIntrinsicElements['lfFeatureGroup']
+
+      if (Object.prototype.hasOwnProperty.call(groupProps, 'mutable')) {
+        isMutable = isMutable && groupProps.mutable
+      }
+    }
+    // TODO: BUG mutability is just broken. Also updating color of wyoming will shift it to the top of z-axis.
+    if (isMutable && propsChanged(oldProps, newProps)) {
       return {
         rootContainer,
         hostContext
@@ -211,20 +193,9 @@ const hostConfig: RenderHostConfigs = {
     if (!childInstance) return
 
     // Sync parent for future reference
-    childInstance.parent = parentInstance
+    childInstance.parent = parentInstance || childInstance.parent
 
-    switch (parentInstance?.category) {
-      case 'map':
-      case 'layergroup':
-      case 'featuregroup': {
-        const parent = parentInstance.leaflet as L.Map | L.LayerGroup
-        const layer = childInstance.leaflet as L.Layer
-
-        parent.addLayer(layer)
-
-        break
-      }
-    }
+    AppendInstance(parentInstance, childInstance)
   },
 
   /**
@@ -244,34 +215,13 @@ const hostConfig: RenderHostConfigs = {
     if (!childInstance) return
 
     // Sync parent for future reference
-    childInstance.parent = parentInstance
+    childInstance.parent = parentInstance || childInstance.parent
 
-    switch (parentInstance?.category) {
-      case 'map':
-      case 'layergroup':
-      case 'featuregroup': {
-        const parent = parentInstance.leaflet as L.Map | L.LayerGroup
-        const layer = childInstance.leaflet as L.Layer
+    // Add the layer
+    AppendInstance(parentInstance, childInstance)
 
-        parent.addLayer(layer)
-
-        // New layers are added on top so let's see if we can fix that, when they share the parent element.
-        // Sometimes they do not since leaflet layer insertions do not match JSX defs.
-        // E.g. all lfCircle are added to a common <svg> element so if we place one next to a lfTileLayer,
-        // then they will be added to different DOM elements and insertBefore is meaningless
-        const childAny = childInstance?.leaflet as any
-        const beforeChildAny = beforeChild?.leaflet as any
-        const element = childAny.getElement ? childAny.getElement() : childAny.getContainer ? childAny.getContainer : null
-        const elementBefore = beforeChildAny.getElement ? beforeChildAny.getElement() : beforeChildAny.getContainer ? beforeChildAny.getContainer : null
-
-        if (element && elementBefore && element.parentNode === elementBefore.parentNode) {
-          element.parentNode?.removeChild(element)
-          elementBefore.parentNode?.insertBefore(element, elementBefore)
-        }
-
-        break
-      }
-    }
+    // Reorder the DOM, if possible
+    TryReplace(childInstance, beforeChild)
   },
 
   /**
@@ -314,63 +264,17 @@ const hostConfig: RenderHostConfigs = {
   * If you never return `true` from `finalizeInitialChildren`, you can leave it empty.
   */
   commitMount: (instance, type, props, internalInstanceHandle) => {
-    switch (instance?.parent?.category) {
-      case 'map': {
-        // popup as a layer
-        if (instance.type === 'lfPopup') {
-          const popup = instance?.leaflet as L.Popup
-          const popupProps = instance?.props as LeafletIntrinsicElements['lfPopup']
-          const parent = instance.parent.leaflet as L.Map
+    if (!instance) return
 
-          if (popupProps.latlng) {
-            popup.setLatLng(popupProps.latlng)
-
-            if (popupProps.isOpen) {
-              popup.openPopup()
-            }
-          }
-
-          // TODO: what about click event handlers on the map or popup itself? this seeems to be a single handler for a single event
-          parent.on('click', (e: L.LeafletMouseEvent) => {
-            if (!popupProps.latlng) {
-              popup.setLatLng(e.latlng)
-            }
-
-            popup.openOn(parent)
-          })
+    // Apply HTML-like attributes, if any
+    const leaflet = instance.leaflet as L.Layer & { getElement?: () => Element | null | undefined, getContainer?: () => Element | null | undefined }
+    const layer$ = leaflet.getElement ? leaflet.getElement() : leaflet.getContainer ? leaflet.getContainer() : null
+    if (layer$) {
+      for (const key in props) {
+        // Prop key is acceptable. Only a handful are acceptable. This is to prevent collision with leaflet attributes
+        if ([/data-.+/i, /id/i, /name/i, /aria-.+/i].some((regex) => regex.test(key))) {
+          layer$.setAttributeNS(null, key, props[key])
         }
-
-        break
-      }
-
-      case 'layer':
-      case 'layergroup':
-      case 'featuregroup': {
-        // popup as an attachment
-        if (instance.type === 'lfPopup') {
-          const popup = instance?.leaflet as L.Popup
-          const popupProps = instance?.props as LeafletIntrinsicElements['lfPopup']
-          const parent = instance?.parent?.leaflet as L.Layer
-          parent.bindPopup(popup, popupProps.options)
-
-          if (popupProps.isOpen) {
-            popup.openPopup()
-          }
-        }
-
-        // tooltip as an attachment
-        if (instance.type === 'lfTooltip') {
-          const tooltip = instance?.leaflet as L.Tooltip
-          const tooltipProps = instance?.props as LeafletIntrinsicElements['lfTooltip']
-          const parent = instance?.parent?.leaflet as L.Layer
-          parent.bindTooltip(tooltip, tooltipProps.options)
-
-          if (tooltipProps.isOpen) {
-            tooltip.openTooltip()
-          }
-        }
-
-        break
       }
     }
   },
@@ -380,7 +284,7 @@ const hostConfig: RenderHostConfigs = {
   *
   * The `internalHandle` data structure is meant to be opaque. If you bend the rules and rely on its internal fields, be aware that it may change significantly between versions. You're taking on additional maintenance risk by reading from it, and giving up all guarantees if you write something to it.
   */
-  commitUpdate,
+  commitUpdate: CommitUpdate,
 
   /**
   * This method should make the `instance` invisible without removing it from the tree. For example, it can apply visual styling to hide it. It is used by Suspense to hide the tree while the fallback is visible.

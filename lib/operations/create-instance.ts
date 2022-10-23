@@ -10,21 +10,24 @@ import Marker from 'leaflet/dist/images/marker-icon.png'
 import MarkerShadow from 'leaflet/dist/images/marker-shadow.png'
 
 /** Set props on a leaflet instance using props from a JSX node  */
-const setProps = function <P extends { [key: string]: any }> (leaflet: L.Evented & { [key: string]: any }, props: P) {
+const setProps = function <P extends { [key: string]: any }>(layer: L.Layer & { [key: string]: any, getElement?: () => Element | undefined | null, getContainer?: () => Element | undefined | null }, props: P) {
   const keys = Object.keys(props)
 
-  keys.forEach((key) => {
-    if (isFunction(props[key]) && leaflet.on) {
+  for (const key of keys) {
+    // wire events if property is an event handler
+    if (isFunction(props[key]) && layer.on) {
       const leafletKey = key.startsWith('on') ? key.substring(2).toLocaleLowerCase('en-US') : key
-      leaflet.on(leafletKey, props[key])
+      layer.on(leafletKey, props[key])
+      continue
     }
 
-    const setter = 'set' + key[0].toLocaleUpperCase('en-US') + (key.length > 1 ? key.substr(1) : '')
-
-    if (leaflet[setter] && isFunction(leaflet[setter])) {
-      leaflet[setter](props[key])
+    // Does it have a corresponding leaflet setter? use that
+    const setter = 'set' + key[0].toLocaleUpperCase('en-US') + (key.length > 1 ? key.substring(1) : '')
+    if (layer[setter] && isFunction(layer[setter])) {
+      layer[setter](props[key])
+      continue
     }
-  })
+  }
 }
 
 /**
@@ -46,43 +49,33 @@ const createInstance = (type: ElementType, props: ElementProps, rootContainer: C
       const { options, whenReady } = props as LeafletIntrinsicElements['lfMap']
       const mp = L.map(rootContainer, options)
 
-      // wire this event inline
+      // wire this event inline because we want to pass a map reference
       if (whenReady) {
         mp.whenReady(() => whenReady(mp))
       }
 
       Add(rootContainer, mp)
 
-      instance = {
-        type,
-        category: 'map',
-        leaflet: mp,
-        props
-      }
+      instance = { type, category: 'map', leaflet: mp, props }
 
       break
     }
 
     case 'lfImage': {
-      const lfImageProps = props as LeafletIntrinsicElements['lfImage']
-      const layer = L.imageOverlay(lfImageProps.imageUrl, lfImageProps.bounds, lfImageProps.options)
+      const { imageUrl, bounds, options, ...restProps } = props as LeafletIntrinsicElements['lfImage']
+      const layer = L.imageOverlay(imageUrl, bounds, options)
 
-      setProps(layer, lfImageProps)
+      setProps(layer, restProps)
 
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
 
       break
     }
 
     case 'lfPopup': {
-      const { children, latlng, ...restProps } = props as LeafletIntrinsicElements['lfPopup']
-      const layer = L.popup(restProps.options)
-      const element = document.createElement('section') // TODO: imrove the wrapper element for lfPopup
+      const { children, latlng, options, ...restProps } = props as LeafletIntrinsicElements['lfPopup']
+      const layer = L.popup(options)
+      const element = document.createElement('section')
       const contentRenderer = Get<string, JSXRenderer | undefined>('jsxRenderer')
       layer.setContent(element)
 
@@ -92,20 +85,15 @@ const createInstance = (type: ElementType, props: ElementProps, rootContainer: C
         contentRenderer(children, element)
       }
 
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
 
       break
     }
 
     case 'lfTooltip': {
-      const { children, ...restProps } = props as LeafletIntrinsicElements['lfTooltip']
-      const layer = L.tooltip(restProps.options)
-      const element = document.createElement('section') // TODO: imrove the wrapper element for lfPopup
+      const { children, options, ...restProps } = props as LeafletIntrinsicElements['lfTooltip']
+      const layer = L.tooltip(options)
+      const element = document.createElement('section')
       const contentRenderer = Get<string, JSXRenderer | undefined>('jsxRenderer')
 
       layer.setContent(element)
@@ -115,12 +103,7 @@ const createInstance = (type: ElementType, props: ElementProps, rootContainer: C
         contentRenderer(children as any, element)
       }
 
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
 
       break
     }
@@ -129,192 +112,130 @@ const createInstance = (type: ElementType, props: ElementProps, rootContainer: C
       const { bounds, options, ...restProps } = props as LeafletIntrinsicElements['lfRectangle']
       const layer = L.rectangle(bounds, options)
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
+
       break
     }
 
     case 'lfMarker': {
-      const { latlng, iconOptions, ...restProps } = props as LeafletIntrinsicElements['lfMarker']
+      const { latlng, options, iconOptions, ...restProps } = props as LeafletIntrinsicElements['lfMarker']
       const icon = L.icon({
         iconUrl: Marker,
         shadowUrl: MarkerShadow,
         ...(iconOptions || {})
       })
-      const layer = L.marker(latlng, { icon, ...restProps.options })
+      const layer = L.marker(latlng, { icon, ...options })
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
+
       break
     }
 
     case 'lfTiles': {
-      const { urlTemplate, ...restProps } = props as LeafletIntrinsicElements['lfTiles']
-      const layer = L.tileLayer(urlTemplate, restProps.options)
+      const { urlTemplate, options, ...restProps } = props as LeafletIntrinsicElements['lfTiles']
+      const layer = L.tileLayer(urlTemplate, options)
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
+
       break
     }
 
     case 'lfTilesWMS': {
-      const { baseUrl, ...restProps } = props as LeafletIntrinsicElements['lfTilesWMS']
-      const layer = L.tileLayer.wms(baseUrl, restProps.options)
+      const { baseUrl, options, ...restProps } = props as LeafletIntrinsicElements['lfTilesWMS']
+      const layer = L.tileLayer.wms(baseUrl, options)
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
+
       break
     }
 
     case 'lfVideo': {
-      const { video, bounds, ...restProps } = props as LeafletIntrinsicElements['lfVideo']
-      const layer = L.videoOverlay(video, bounds, restProps.options)
-
+      const { video, bounds, options, ...restProps } = props as LeafletIntrinsicElements['lfVideo']
+      const layer = L.videoOverlay(video, bounds, options)
       setProps(layer, restProps)
-
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
 
       break
     }
 
     case 'lfPolyline': {
-      const { latlngs, ...restProps } = props as LeafletIntrinsicElements['lfPolyline']
-      const layer = L.polyline(latlngs as any, restProps.options)
-
+      const { latlngs, options, ...restProps } = props as LeafletIntrinsicElements['lfPolyline']
+      const layer = L.polyline(latlngs as any, options)
       setProps(layer, restProps)
-
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
 
       break
     }
 
     case 'lfPolygon': {
-      const { latlngs, ...restProps } = props as LeafletIntrinsicElements['lfPolygon']
-      const layer = L.polygon(latlngs, restProps.options)
+      const { latlngs, options, ...restProps } = props as LeafletIntrinsicElements['lfPolygon']
+      const layer = L.polygon(latlngs, options)
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
+
       break
     }
 
     case 'lfCircle': {
-      const { latlng, ...restProps } = props as LeafletIntrinsicElements['lfCircle']
-      const layer = L.circle(latlng, restProps.options)
+      const { latlng, options, ...restProps } = props as LeafletIntrinsicElements['lfCircle']
+      const layer = L.circle(latlng, options)
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
+
       break
     }
 
     case 'lfCircleMarker': {
-      const { latlng, ...restProps } = props as LeafletIntrinsicElements['lfCircleMarker']
-      const layer = L.circleMarker(latlng, restProps.options)
+      const { latlng, options, ...restProps } = props as LeafletIntrinsicElements['lfCircleMarker']
+      const layer = L.circleMarker(latlng, options)
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
+
       break
     }
 
     case 'lfSVG': {
-      const { svgImage, bounds, ...restProps } = props as LeafletIntrinsicElements['lfSVG']
-      const layer = L.svgOverlay(svgImage, bounds, restProps.options)
+      const { svgImage, bounds, options, ...restProps } = props as LeafletIntrinsicElements['lfSVG']
+      const layer = L.svgOverlay(svgImage, bounds, options)
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
+
       break
     }
 
     case 'lfLayerGroup': {
-      const { children, ...restProps } = props as LeafletIntrinsicElements['lfLayerGroup']
-      const layer = L.layerGroup([], restProps.options)
+      const { children, options, layers, ...restProps } = props as LeafletIntrinsicElements['lfLayerGroup']
+      const layer = L.layerGroup(layers, options)
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'layergroup',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layergroup', leaflet: layer, props }
+
       break
     }
 
     case 'lfFeatureGroup': {
-      const { children, ...restProps } = props as LeafletIntrinsicElements['lfFeatureGroup']
-      const layer = L.featureGroup([], restProps.options)
+      const { children, options, layers, ...restProps } = props as LeafletIntrinsicElements['lfFeatureGroup']
+      const layer = L.featureGroup(layers, options)
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'featuregroup',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'featuregroup', leaflet: layer, props }
+
       break
     }
 
     case 'lfGeoJSON': {
-      const { geojson, ...restProps } = props as LeafletIntrinsicElements['lfGeoJSON']
-      const layer = L.geoJSON(geojson, restProps.options)
+      const { geojson, options, ...restProps } = props as LeafletIntrinsicElements['lfGeoJSON']
+      const layer = L.geoJSON(geojson, options)
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
+
       break
     }
 
     case 'lfGridLayer': {
-      const restProps = props as LeafletIntrinsicElements['lfGridLayer']
-      const layer = L.gridLayer(restProps.options)
+      const { options, ...restProps } = props as LeafletIntrinsicElements['lfGridLayer']
+      const layer = L.gridLayer(options)
       setProps(layer, restProps)
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: layer,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: layer, props }
+
       break
     }
   }
@@ -329,32 +250,17 @@ const createInstance = (type: ElementType, props: ElementProps, rootContainer: C
 
       setProps(klassInstance, layerProps)
 
-      instance = {
-        type,
-        category: 'layer',
-        leaflet: klassInstance,
-        props
-      }
+      instance = { type, category: 'layer', leaflet: klassInstance, props }
     } else if (type.indexOf('Control') > -1) {
       const controlProps = props as LeafletExtensions.Control
       const Ctor = controlProps.klass
       const klassInstance = new Ctor({ ...controlProps.params, children: controlProps.children, jsxRenderer: contentRenderer })
 
-      instance = {
-        type,
-        category: 'control',
-        leaflet: klassInstance,
-        props
-      }
+      instance = { type, category: 'control', leaflet: klassInstance, props }
     } else if (type.indexOf('Handler') > -1) {
       const handlerProps = props as LeafletExtensions.Handler
 
-      instance = {
-        type,
-        category: 'handler',
-        leaflet: handlerProps.klass,
-        props
-      }
+      instance = { type, category: 'handler', leaflet: handlerProps.klass, props }
     }
 
     if (type.startsWith('lf') && !instance) {

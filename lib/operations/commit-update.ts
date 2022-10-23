@@ -5,7 +5,22 @@ import L from 'leaflet'
 import { Get } from '../cache'
 import { LeafletExtensions, LeafletIntrinsicElements } from '../catalog'
 import { Instance, ElementType, UpdatePayload, ElementProps } from '../types'
-import createInstance from './create-instance'
+import CreateInstance from './create-instance'
+import TryReplace from '../try-replace'
+
+/** Switch popup/tooltip bindings to a new layer */
+const tryTransferLayerAdditions = (layer: L.Layer, newLayer: L.Layer) => {
+  const popup = layer.getPopup()
+  const tooltip = layer.getTooltip()
+  if (popup) {
+    layer.unbindPopup()
+    newLayer.bindPopup(popup)
+  }
+  if (tooltip) {
+    layer.unbindTooltip()
+    newLayer.bindTooltip(tooltip)
+  }
+}
 
 /**
 * This method should mutate the `instance` according to the set of changes in `updatePayload`. Here, `updatePayload` is the object that you've returned from `prepareUpdate` and has an arbitrary structure that makes sense for your renderer. For example, the DOM renderer returns an update payload like `[prop1, value1, prop2, value2, ...]` from `prepareUpdate`, and that structure gets passed into `commitUpdate`. Ideally, all the diffing and calculation should happen inside `prepareUpdate` so that `commitUpdate` can be fast and straightforward.
@@ -44,58 +59,75 @@ const commitUpdate = (instance: Instance, updatePayload: UpdatePayload, type: El
     case 'featuregroup': {
       const layer = instance?.leaflet as L.Layer & Partial<LeafletExtensions.Statefull<any>>
 
-      // special case of attached popup
-      if (instance.type === 'lfPopup') {
-        const popup = instance.leaflet as L.Popup
-        const popupProps = nextProps as LeafletIntrinsicElements['lfPopup']
+      switch (instance.type) {
+        // special case of attached popup
+        case 'lfPopup': {
+          const popup = instance.leaflet as L.Popup
+          const popupProps = nextProps as LeafletIntrinsicElements['lfPopup']
 
-        if (popupProps.latlng) {
-          popup.setLatLng(popupProps.latlng)
-        }
-
-        if (instance.parent?.category === 'map') {
-          const parent = instance.parent?.leaflet as L.Map
-
-          if (popupProps.isOpen) {
-            parent.openPopup(popup)
-          } else {
-            parent.closePopup(popup)
+          if (popupProps.latlng) {
+            popup.setLatLng(popupProps.latlng)
           }
-        } else {
-          const parent = instance.parent?.leaflet as L.Layer
 
-          if (popupProps.isOpen) {
-            parent.openPopup()
-          } else {
-            parent.closePopup()
-          }
-        }
-      } else {
-        if (instance.parent?.category === 'map' || instance.parent?.category === 'featuregroup' || instance.parent?.category === 'layergroup') {
-          const parent = instance.parent?.leaflet as L.Map | L.FeatureGroup | L.LayerGroup
-          const newInstance = createInstance(type, nextProps, updatePayload.rootContainer, updatePayload.hostContext, internalHandle)
+          if (instance.parent?.category === 'map') {
+            const parent = instance.parent?.leaflet as L.Map
 
-          if (newInstance) {
-            const newLayer = newInstance.leaflet as L.Layer & Partial<LeafletExtensions.Statefull<any>>
-            const layerProps = nextProps as LeafletExtensions.Layer
-
-            if (!Object.prototype.hasOwnProperty.call(layerProps, 'mutable') || layerProps.mutable) {
-              // Statefull layer or mutable explicitly, default behavior
-              if (layer.getState && newLayer.setState) {
-                const oldState = layer.getState()
-                newLayer.setState(oldState)
-              }
-
-              // Refresh layer
-              parent.removeLayer(layer)
-              parent.addLayer(newLayer)
+            if (popupProps.isOpen) {
+              parent.openPopup(popup)
             } else {
-              // Standard layer, not marked as mutable
-              // Not much can change after layer is created because leaflet is immutable. Note that popups and tooltips are handled via JSX directly
+              parent.closePopup(popup)
             }
+          } else {
+            const parent = instance.parent?.leaflet as L.Layer
 
-            instance.leaflet = newInstance.leaflet
+            if (popupProps.isOpen) {
+              parent.openPopup()
+            } else {
+              parent.closePopup()
+            }
           }
+
+          break
+        }
+
+        default: {
+          if (!instance.parent) break
+
+          const parent = instance.parent?.leaflet as L.Map | L.FeatureGroup | L.LayerGroup
+          const mutableNextProps = { ...nextProps }
+
+          // Transfers existing layers from current group to new group
+          if (instance.category === 'layergroup' || instance.category === 'featuregroup') {
+            mutableNextProps.layers = (layer as L.FeatureGroup | L.LayerGroup).getLayers()
+          }
+
+          const newInstance = CreateInstance(type, mutableNextProps, updatePayload.rootContainer, updatePayload.hostContext, internalHandle)
+
+          if (!newInstance) break
+
+          instance.leaflet = newInstance.leaflet
+
+          const newLayer = newInstance.leaflet as L.Layer & Partial<LeafletExtensions.Statefull<any>>
+
+          // Stateful layer
+          if (layer.getState && newLayer.setState) {
+            const oldState = layer.getState()
+            newLayer.setState(oldState)
+          }
+
+          // Add new layer
+          parent.addLayer(newLayer)
+
+          // Configure new layer using the old layer
+          tryTransferLayerAdditions(layer, newLayer)
+          TryReplace(instance, newInstance)
+
+          // Remove old layer when it is not a group because groups do not have a DOM. Remove on a group is a proxy call to remove layers
+          if (instance.category !== 'layergroup' && instance.category !== 'featuregroup') {
+            parent.removeLayer(layer)
+          }
+
+          break
         }
       }
 
@@ -105,26 +137,19 @@ const commitUpdate = (instance: Instance, updatePayload: UpdatePayload, type: El
     case 'control': {
       const parent = instance.parent?.leaflet as L.Map
       const control = instance?.leaflet as L.Control & Partial<LeafletExtensions.Statefull<any>>
-      const controlProps = nextProps as LeafletExtensions.Control['params']
-      const newInstance = createInstance(type, nextProps, updatePayload.rootContainer, updatePayload.hostContext, internalHandle)
+      const newInstance = CreateInstance(type, nextProps, updatePayload.rootContainer, updatePayload.hostContext, internalHandle)
 
       if (newInstance) {
         const newControl = newInstance.leaflet as L.Control & Partial<LeafletExtensions.Statefull<any>>
 
-        if (!Object.prototype.hasOwnProperty.call(controlProps, 'mutable') || controlProps.mutable) {
-          // statefull control, default behavior
-
-          if (control.getState && newControl.setState) {
-            const oldState = control.getState()
-            newControl.setState(oldState)
-          }
-
-          parent.removeControl(control)
-          parent.addControl(newControl)
-        } else {
-          // standard control
-          control.setPosition(controlProps.position)
+        // statefull control
+        if (control.getState && newControl.setState) {
+          const oldState = control.getState()
+          newControl.setState(oldState)
         }
+
+        parent.removeControl(control)
+        parent.addControl(newControl)
 
         instance.leaflet = newInstance.leaflet
       }

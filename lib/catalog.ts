@@ -69,13 +69,13 @@ export interface LeafletReactFiberEvents {
 }
 
 /** A single child with optional properties */
-type Child<T> = globalThis.React.ReactElement<Partial<{ [K in keyof T]: T[K] }>>
+export type Child<T> = globalThis.React.ReactElement<Partial<{ [K in keyof T]: T[K] }>> | null | undefined | never | boolean
 /** One or more JSX children elements */
-type IntrinsicElementChildren<T> = { children?: Child<T> | Child<T>[] | never[] }
+export type IntrinsicElementChildren<T> = { children?: Child<T> | Child<T>[] }
 /** One JSX children elements */
-type IntrinsicElementChild<T> = { children?: Child<T> | never[] }
+export type IntrinsicElementChild<T> = { children?: Child<T> }
 
-interface IntrinsicLayerAdditions extends globalThis.JSX.Element {
+export interface IntrinsicLayerAdditions extends globalThis.JSX.Element {
   /** A leaflet popup */
   lfPopup: { options?: L.PopupOptions, source?: L.Layer, children: globalThis.JSX.Element, latlng?: L.LatLngExpression, isOpen?: boolean } & LeafletReactFiberEvents
   /** A leaflet tooltip */
@@ -83,10 +83,10 @@ interface IntrinsicLayerAdditions extends globalThis.JSX.Element {
 }
 
 /** Common types for all layer JSX elements */
-type LayerElementCommon<T> = globalThis.React.RefAttributes<T> & IntrinsicElementChild<IntrinsicLayerAdditions> & LeafletReactFiberEvents & { mutable?: boolean }
+export type LayerElementCommon<T> = globalThis.React.RefAttributes<T> & IntrinsicElementChildren<IntrinsicLayerAdditions> & LeafletReactFiberEvents & { mutable?: boolean }
 
 /** Intrinsic layer defintions to extend JSX */
-interface IntrinsicLayers extends globalThis.JSX.Element {
+export interface IntrinsicLayers extends globalThis.JSX.Element {
   /** A leaflet image layer */
   lfImage: { imageUrl: string, bounds: L.LatLngBoundsExpression, options?: L.ImageOverlayOptions } & LayerElementCommon<L.ImageOverlay>
   /** A leaflet rectangle layer */
@@ -115,7 +115,7 @@ interface IntrinsicLayers extends globalThis.JSX.Element {
   lfGridLayer: { options?: L.GridLayerOptions } & LeafletReactFiberEvents
 }
 
-interface IntrinsicGroups extends globalThis.JSX.Element {
+export interface IntrinsicGroups extends globalThis.JSX.Element {
   /** A leaflet layergroup */
   lfLayerGroup: { layers?: L.Layer[], options?: L.LayerOptions, mutable?: boolean } & LeafletReactFiberEvents & IntrinsicElementChildren<IntrinsicLayerAdditions> & IntrinsicElementChildren<IntrinsicLayers>
   /** A leaflet featuregroup layer */
@@ -173,8 +173,9 @@ export interface IntrinsicMap extends globalThis.JSX.Element {
 export interface LeafletIntrinsicElements extends IntrinsicMap, IntrinsicLayers, IntrinsicGroups, IntrinsicLayerAdditions { }
 
 declare global {
-  export namespace JSX {
-    // eslint-disable-next-line
+  // eslint-disable-next-line no-unused-vars
+  namespace JSX {
+    // eslint-disable-next-line no-unused-vars
     interface IntrinsicElements extends LeafletIntrinsicElements { }
   }
 }
