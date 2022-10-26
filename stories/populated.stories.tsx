@@ -7,7 +7,7 @@ import Populated, { PopulatedPlacesProps, PopulatedPlacesPropsDefaults } from '.
 
 export const PopulatedPlaces = ({ geoJson }: PopulatedPlacesProps) => {
   return (
-    <Populated geoJson={geoJson} />
+    <Populated geoJson={geoJson} mapHeight='96vh' />
   )
 }
 
@@ -23,7 +23,9 @@ export default {
       }
     }
   },
-  args: PopulatedPlacesPropsDefaults,
+  args: {
+    geoJson: PopulatedPlacesPropsDefaults.geoJson
+  },
   parameters: {
     controls: { expanded: true },
     docs: {

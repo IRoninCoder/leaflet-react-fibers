@@ -6,27 +6,41 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
   base = 'dark'
 }
 
-// resize the nav panel on the left to be a bit larger
-let storybookConfig = JSON.parse(localStorage.getItem('storybook-layout'));
+// Calculate bottom panel's height
+const heightDiv = document.createElement('div')
+heightDiv.style.height = '64vh'
+document.body.appendChild(heightDiv)
+const y = heightDiv.clientHeight
+document.body.removeChild(heightDiv) 
 
-if (storybookConfig && storybookConfig.resizerNav.x < 320) {
-  storybookConfig.resizerNav.x = 320;
-  localStorage.setItem('storybook-layout', JSON.stringify(storybookConfig));
-  document.location.reload();
+// Calculate side panel's width
+const widthDiv = document.createElement('div')
+widthDiv.style.width = '16vw'
+document.body.appendChild(widthDiv)
+const x = widthDiv.clientWidth
+document.body.removeChild(widthDiv) 
+
+// resize the nav panel on the left to be a bit larger
+let storybookConfig = JSON.parse(localStorage.getItem('storybook-layout'))
+
+if (storybookConfig && storybookConfig.resizerNav.x < x) {
+  storybookConfig.resizerNav.x = x
+  localStorage.setItem('storybook-layout', JSON.stringify(storybookConfig))
+  document.location.reload()
 }
 
 // resize the properties panell at the bottom
-if (storybookConfig && storybookConfig.resizerPanel.y > 600) {
-  storybookConfig.resizerPanel.y = 600;
-  localStorage.setItem('storybook-layout', JSON.stringify(storybookConfig));
-  document.location.reload();
+if (storybookConfig && storybookConfig.resizerPanel.y > y) {
+  storybookConfig.resizerPanel.y = y
+  localStorage.setItem('storybook-layout', JSON.stringify(storybookConfig))
+  document.location.reload()
 }
 
 // new settings if localStorage is empty
 if (!storybookConfig) {
-  storybookConfig = { resizerNav: { x: 320, y: 0 }, resizerPanel: { x: 0, y: 600 } };
-  localStorage.setItem('storybook-layout', JSON.stringify(storybookConfig));
-  document.location.reload();
+  storybookConfig = { resizerNav: { x, y: 0 }, resizerPanel: { x: 0, y } }
+  localStorage.setItem('storybook-layout', JSON.stringify(storybookConfig))
+  document.location.reload()
 }
 
 export default create({
@@ -43,4 +57,4 @@ export default create({
         Click for github
       </span>
     </span>`
-});
+})

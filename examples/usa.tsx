@@ -99,26 +99,29 @@ const WyomingExtended = ({ color }: { color: string }) => {
   )
 }
 
+export const WMS_BASE_URL = 'http://ows.mundialis.de/services/service'
 export interface USAProps {
   isVisible: boolean
   zPosition: 'top' | 'middle' | 'bottom'
   geoJson: any
   mutability: boolean
   wyomingColor: string
+  mapHeight: string
 }
 export const USAPropsDefaults: USAProps = {
   zPosition: 'bottom',
   isVisible: true,
   mutability: true,
   wyomingColor: 'white',
-  geoJson: StatesGeoJson
+  geoJson: StatesGeoJson,
+  mapHeight: '42rem'
 }
 /** Map of us states using geo json boundaries */
 const USA = (props: Partial<USAProps> = USAPropsDefaults) => {
-  const { isVisible, zPosition, geoJson, mutability, wyomingColor } = { ...USAPropsDefaults, ...props }
+  const { isVisible, zPosition, geoJson, mutability, wyomingColor, mapHeight } = { ...USAPropsDefaults, ...props }
 
   return (
-    <div style={{ height: 600 }}>
+    <div style={{ height: mapHeight }}>
       <LeafletMap
         jsxRenderer={ReactDOM.render}
         options={{
@@ -131,9 +134,7 @@ const USA = (props: Partial<USAProps> = USAPropsDefaults) => {
         }}
       >
 
-        {/* <lfImage bounds={[[49.3, -127], [23, -65]]} imageUrl='https://tbh.com/app/uploads/2018/02/iStock-538151722.jpg'></lfImage> */}
-
-        <lfTilesWMS baseUrl="http://ows.mundialis.de/services/service?" options={{
+        <lfTilesWMS baseUrl={WMS_BASE_URL} options={{
           layers: 'TOPO-WMS',
           format: 'image/png',
           noWrap: true,

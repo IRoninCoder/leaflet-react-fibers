@@ -7,7 +7,7 @@ import USA, { USAProps, USAPropsDefaults } from '../examples/usa'
 
 export const UnitedStates = ({ isVisible, zPosition, geoJson, mutability, wyomingColor }: USAProps) => {
   return (
-    <USA geoJson={geoJson} isVisible={isVisible} mutability={mutability} zPosition={zPosition} wyomingColor={wyomingColor} />
+    <USA geoJson={geoJson} isVisible={isVisible} mutability={mutability} zPosition={zPosition} wyomingColor={wyomingColor} mapHeight='96vh' />
   )
 }
 
@@ -54,7 +54,13 @@ export default {
       }
     }
   },
-  args: USAPropsDefaults,
+  args: {
+    zPosition: USAPropsDefaults.zPosition,
+    isVisible: USAPropsDefaults.isVisible,
+    mutability: USAPropsDefaults.mutability,
+    wyomingColor: USAPropsDefaults.wyomingColor,
+    geoJson: USAPropsDefaults.geoJson
+  },
   parameters: {
     controls: { expanded: true },
     docs: {
