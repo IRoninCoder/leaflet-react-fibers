@@ -272,7 +272,7 @@ const hostConfig: RenderHostConfigs = {
     if (layer$) {
       for (const key in props) {
         // Prop key is acceptable. Only a handful are acceptable. This is to prevent collision with leaflet attributes
-        if ([/data-.+/i, /id/i, /name/i, /aria-.+/i].some((regex) => regex.test(key))) {
+        if ([/data-.+/i, /id/i, /aria-.+/i].some((regex) => regex.test(key))) {
           layer$.setAttributeNS(null, key, props[key])
         }
       }

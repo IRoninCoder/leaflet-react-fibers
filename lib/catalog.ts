@@ -74,12 +74,14 @@ export type Child<T> = globalThis.React.ReactElement<Partial<{ [K in keyof T]: T
 export type IntrinsicElementChildren<T> = { children?: Child<T> | Child<T>[] }
 /** One JSX children elements */
 export type IntrinsicElementChild<T> = { children?: Child<T> }
+/** A few HTML attributes to add to DOM when mounting */
+export type HTMLAttributesFor<T> = Pick<globalThis.React.HTMLAttributes<T>, 'id'>
 
 export interface IntrinsicLayerAdditions extends globalThis.JSX.Element {
   /** A leaflet popup */
-  lfPopup: { options?: L.PopupOptions, source?: L.Layer, children: globalThis.JSX.Element, latlng?: L.LatLngExpression, isOpen?: boolean } & LeafletReactFiberEvents
+  lfPopup: { options?: L.PopupOptions, source?: L.Layer, children: globalThis.JSX.Element, latlng?: L.LatLngExpression, isOpen?: boolean } & LeafletReactFiberEvents & HTMLAttributesFor<HTMLDivElement>
   /** A leaflet tooltip */
-  lfTooltip: { options?: L.TooltipOptions, source?: L.Layer, children: globalThis.JSX.Element, isOpen?: boolean } & LeafletReactFiberEvents
+  lfTooltip: { options?: L.TooltipOptions, source?: L.Layer, children: globalThis.JSX.Element, isOpen?: boolean } & LeafletReactFiberEvents & HTMLAttributesFor<HTMLDivElement>
 }
 
 /** Common types for all layer JSX elements */
@@ -88,31 +90,31 @@ export type LayerElementCommon<T> = globalThis.React.RefAttributes<T> & Intrinsi
 /** Intrinsic layer defintions to extend JSX */
 export interface IntrinsicLayers extends globalThis.JSX.Element {
   /** A leaflet image layer */
-  lfImage: { imageUrl: string, bounds: L.LatLngBoundsExpression, options?: L.ImageOverlayOptions } & LayerElementCommon<L.ImageOverlay>
+  lfImage: { imageUrl: string, bounds: L.LatLngBoundsExpression, options?: L.ImageOverlayOptions } & LayerElementCommon<L.ImageOverlay> & HTMLAttributesFor<HTMLImageElement>
   /** A leaflet rectangle layer */
-  lfRectangle: { bounds: L.LatLngBoundsExpression, options?: L.PolylineOptions } & LayerElementCommon<L.Rectangle>
+  lfRectangle: { bounds: L.LatLngBoundsExpression, options?: L.PolylineOptions } & LayerElementCommon<L.Rectangle> & HTMLAttributesFor<SVGPathElement>
   /** A leaflet marker */
-  lfMarker: { latlng: L.LatLngExpression, options?: L.MarkerOptions, iconOptions?: Partial<L.IconOptions> } & LayerElementCommon<L.Marker>
+  lfMarker: { latlng: L.LatLngExpression, options?: L.MarkerOptions, iconOptions?: Partial<L.IconOptions> } & LayerElementCommon<L.Marker> & HTMLAttributesFor<HTMLDivElement>
   /** A leaflet tile layer */
-  lfTiles: { urlTemplate: string, options?: L.TileLayerOptions } & LayerElementCommon<L.TileLayer>
+  lfTiles: { urlTemplate: string, options?: L.TileLayerOptions } & LayerElementCommon<L.TileLayer> & HTMLAttributesFor<HTMLDivElement>
   /** A leaflet WMS layer */
-  lfTilesWMS: { baseUrl: string, options: L.WMSOptions } & LayerElementCommon<L.TileLayer.WMS>
+  lfTilesWMS: { baseUrl: string, options: L.WMSOptions } & LayerElementCommon<L.TileLayer.WMS> & HTMLAttributesFor<HTMLImageElement>
   /** A leaflet video layer */
-  lfVideo: { video: string | string[] | HTMLVideoElement, bounds: L.LatLngBoundsExpression, options?: L.VideoOverlayOptions } & LayerElementCommon<L.VideoOverlay>
+  lfVideo: { video: string | string[] | HTMLVideoElement, bounds: L.LatLngBoundsExpression, options?: L.VideoOverlayOptions } & LayerElementCommon<L.VideoOverlay> & HTMLAttributesFor<HTMLVideoElement>
   /** A leaflet polyline layer */
-  lfPolyline: { latlngs: L.LatLngExpression[] | L.LatLngExpression[][] | L.LatLngExpression[][][], options?: L.PolylineOptions } & LayerElementCommon<L.Polyline>
+  lfPolyline: { latlngs: L.LatLngExpression[] | L.LatLngExpression[][] | L.LatLngExpression[][][], options?: L.PolylineOptions } & LayerElementCommon<L.Polyline> & HTMLAttributesFor<SVGPathElement>
   /** A leaflet polygon layer */
-  lfPolygon: { latlngs: L.LatLngExpression[] | L.LatLngExpression[][] | L.LatLngExpression[][][], options?: L.PolylineOptions } & LayerElementCommon<L.Polygon>
+  lfPolygon: { latlngs: L.LatLngExpression[] | L.LatLngExpression[][] | L.LatLngExpression[][][], options?: L.PolylineOptions } & LayerElementCommon<L.Polygon> & HTMLAttributesFor<SVGPathElement>
   /** A leaflet circle layer */
-  lfCircle: { latlng: L.LatLngExpression, options?: L.CircleMarkerOptions } & LayerElementCommon<L.Circle>
+  lfCircle: { latlng: L.LatLngExpression, options?: L.CircleMarkerOptions } & LayerElementCommon<L.Circle> & HTMLAttributesFor<SVGPathElement>
   /** A leaflet circle marker layer */
-  lfCircleMarker: { latlng: L.LatLngExpression, options?: L.CircleMarkerOptions } & LayerElementCommon<L.CircleMarker>
+  lfCircleMarker: { latlng: L.LatLngExpression, options?: L.CircleMarkerOptions } & LayerElementCommon<L.CircleMarker> & HTMLAttributesFor<SVGPathElement>
   /** A leaflet svg layer */
   lfSVG: { svgImage: string | SVGElement, bounds: L.LatLngBoundsExpression, options?: L.ImageOverlayOptions } & LayerElementCommon<L.SVGOverlay>
   /** A leaflet geojson layer */
-  lfGeoJSON: { geojson?: GeoJsonObject & { [key: string]: any }, options?: L.GeoJSONOptions<any> } & LayerElementCommon<L.GeoJSON>
+  lfGeoJSON: { geojson?: GeoJsonObject & { [key: string]: any }, options?: L.GeoJSONOptions<any> } & LayerElementCommon<L.GeoJSON> & HTMLAttributesFor<SVGSVGElement>
   /** A leaflet grid layer */
-  lfGridLayer: { options?: L.GridLayerOptions } & LeafletReactFiberEvents
+  lfGridLayer: { options?: L.GridLayerOptions } & LeafletReactFiberEvents & HTMLAttributesFor<HTMLDivElement> & HTMLAttributesFor<HTMLDivElement>
 }
 
 export interface IntrinsicGroups extends globalThis.JSX.Element {
