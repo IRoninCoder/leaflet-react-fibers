@@ -189,39 +189,39 @@ const SvgLayers = ({ zPosition }: { zPosition: 'top' | 'bottom' }) => {
 describe('svg.cy.ts', () => {
   it('prestine snapshot matches', () => {
     cy.mount(<SvgLayers zPosition='bottom' />)
-    cy.compareSnapshot('svg')
+    cy.compareSnapshot('prestine')
   })
 
   it('snapshot matches after changing the z-position of svg element', () => {
     cy.mount(<SvgLayers zPosition='bottom' />)
       .then((mounted) => {
         mounted.rerender(<SvgLayers zPosition='top' />)
-        cy.compareSnapshot('svg-zposition')
+        cy.compareSnapshot('zposition-change')
       })
   })
 
   it('layer additions work inside of lfCircle', () => {
     cy.mount(<SvgLayers zPosition='top' />)
     cy.get("[data-testid='lfCircle']").click()
-    cy.compareSnapshot('svg-circleclick')
+    cy.compareSnapshot('circle-popup-tooltip')
   })
 
   it('layer additions work inside of lfRectangle', () => {
     cy.mount(<SvgLayers zPosition='bottom' />)
     cy.get("[data-testid='lfRectangle']").click()
-    cy.compareSnapshot('svg-rectangleclick')
+    cy.compareSnapshot('rectangle-popup-tooltip')
   })
 
   it('layer additions work inside of lfPolygon', () => {
     cy.mount(<SvgLayers zPosition='bottom' />)
     cy.get("[data-testid='lfPolygon']").click({ force: true })
-    cy.compareSnapshot('svg-polygonclick')
+    cy.compareSnapshot('polygon-popup-tooltip')
   })
 
   it('layer additions work inside of lfPolyline', () => {
     cy.mount(<SvgLayers zPosition='bottom' />)
     cy.get("[data-testid='lfPolyline']").click()
-    cy.compareSnapshot('svg-polylineclick')
+    cy.compareSnapshot('polyline-popup-tooltip')
   })
 
   // TODO: add more tests for events. Since leaflet events are mostly the same across all leaflet object, then perhaps we should find a common technique to simplify this
