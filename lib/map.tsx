@@ -1,7 +1,7 @@
 import React, { useRef, useLayoutEffect, useState } from 'react'
 import L from 'leaflet'
 
-import './map.css'
+import 'leaflet/dist/leaflet.css'
 
 import Renderer from './renderer'
 import { CustomMapOptions, IntrinsicMapChildren, JSXRenderer } from './catalog'
