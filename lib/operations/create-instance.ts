@@ -1,6 +1,6 @@
 import { OpaqueHandle } from 'react-reconciler'
 import L from 'leaflet'
-import { isFunction } from 'lodash'
+import isFunction from 'lodash/isFunction'
 
 import { JSXRenderer, LeafletExtensions, LeafletIntrinsicElements } from '../catalog'
 import { Container, ElementProps, ElementType, HostContext, Instance } from '../renderer-types'

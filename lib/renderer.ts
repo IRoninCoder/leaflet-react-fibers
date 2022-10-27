@@ -1,6 +1,8 @@
 import ReactReconciler from 'react-reconciler'
 import L from 'leaflet'
-import { isEqualWith, isFunction, noop } from 'lodash'
+import isEqualWith from 'lodash/isEqualWith'
+import isFunction from 'lodash/isFunction'
+import noop from 'lodash/noop'
 
 import { JSXRenderer, LeafletIntrinsicElements } from './catalog'
 import { ElementProps, RenderHostConfigs } from './renderer-types'
