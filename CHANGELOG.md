@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/chickencoding123/leaflet-react-fibers/compare/2.0.0...2.0.1) (2022-10-28)
+
+
+### Bug Fixes
+
+* **deps:** typing path was missing in `package.json` ([#12](https://github.com/chickencoding123/leaflet-react-fibers/issues/12)) ([6a3052d](https://github.com/chickencoding123/leaflet-react-fibers/commit/6a3052ddb694c45dd43342266513988192935797))
+
 # [2.0.0](https://github.com/chickencoding123/leaflet-react-fibers/compare/1.1.0...2.0.0) (2022-10-28)
 
 
