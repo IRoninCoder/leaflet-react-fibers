@@ -1,11 +1,18 @@
 {
   "name": "leaflet-react-fibers",
   "version": "1.1.0",
-  "description": "A high performance react reconciler for [leafletjs](https://www.leafletjs.com)",
+  "description": "A high performance react library for [leafletjs](https://www.leafletjs.com)",
   "author": "chickencoding123",
   "homepage": "https://github.com/chickencoding123/leaflet-react-fibers#readme",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "./dist/index.umd.cjs",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.cjs"
+    }
+  },
   "directories": {
     "lib": "lib",
     "dist": "dist"
@@ -29,60 +36,61 @@
     "leaflet-react"
   ],
   "peerDependencies": {
-    "react": ">= 16.0.0"
+    "leaflet": "^1.0.0",
+    "react": "^17.0.0",
+    "scheduler": "^0.20.0"
   },
   "scripts": {
     "prepare": "husky install && npx commitizen init cz-conventional-changelog --force",
-    "build": "mkdir -p dist && cp -p lib/*.css dist && tsc",
-    "lint": "eslint lib/*.ts* stories/*.ts* --fix",
-    "test": "jest --runInBand",
-    "test-ci": "jest --coverage",
+    "build": "vite build -c vite.build.js",
+    "lint": "eslint . --ext .js,.ts,.tsx --fix",
+    "test": "cypress run --env type=actual --component",
+    "test-base": "cypress run --env type=base --component",
+    "test-ci": "npm run test",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook -o docs"
   },
   "dependencies": {
-    "leaflet": "^1.7.1",
     "lodash": "^4.17.21",
-    "react-reconciler": "^0.26.2"
+    "react-reconciler": "^0.26.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.8",
     "@commitlint/cli": "^16.1.0",
     "@commitlint/config-conventional": "^16.0.0",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
-    "@storybook/addon-actions": "^6.3.10",
-    "@storybook/addon-essentials": "^6.3.10",
-    "@storybook/addon-links": "^6.3.10",
-    "@storybook/addons": "^6.4.19",
-    "@storybook/builder-webpack5": "^6.4.19",
-    "@storybook/manager-webpack5": "^6.4.19",
-    "@storybook/react": "^6.3.10",
-    "@storybook/theming": "^6.4.19",
-    "@testing-library/dom": "^8.11.1",
-    "@testing-library/jest-dom": "^5.16.1",
-    "@testing-library/react": "^12.1.2",
-    "@types/jest": "^27.0.3",
-    "@types/leaflet": "^1.7.5",
-    "@types/lodash": "^4.14.178",
-    "@types/react-reconciler": "^0.26.4",
-    "@typescript-eslint/eslint-plugin": "^5.8.1",
-    "@typescript-eslint/parser": "^5.8.1",
-    "babel-loader": "^8.0.0",
+    "@storybook/addon-essentials": "^6.5.12",
+    "@storybook/addon-links": "^6.5.12",
+    "@storybook/addons": "^6.5.12",
+    "@storybook/builder-webpack5": "^6.5.12",
+    "@storybook/manager-webpack5": "^6.5.12",
+    "@storybook/react": "^6.5.12",
+    "@storybook/theming": "^6.5.12",
+    "@types/leaflet": "^1.8.0",
+    "@types/lodash": "^4.14.186",
+    "@types/react-dom": "^18.0.6",
+    "@types/react-reconciler": "^0.26.0",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
+    "@vitejs/plugin-react": "^2.1.0",
     "commitizen": "^4.2.4",
+    "cypress": "^10.10.0",
+    "cypress-visual-regression": "^1.7.0",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^7.32.0",
-    "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-react": "^7.28.0",
+    "eslint": "^8.24.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.3.0",
+    "eslint-plugin-promise": "^6.0.1",
+    "eslint-plugin-react": "^7.31.8",
+    "eslint-plugin-storybook": "^0.6.4",
     "husky": "^7.0.4",
-    "jest": "^27.4.5",
-    "jsdom": "^19.0.0",
-    "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "semantic-release": "^19.0.2",
-    "ts-jest": "^27.1.2",
-    "typescript": "^4.4.3",
-    "webpack": "^5.0.0"
+    "typescript": "^4.8.4",
+    "vite": "^3.1.8",
+    "vite-plugin-dts": "^1.6.6"
   },
   "engines": {
     "node": ">= 14"

@@ -1,0 +1,4 @@
+/** Leaflet lfGrid requires borders to be visible */
+.grid-border > div > div {
+  border: 0.0625rem dashed black;
+}

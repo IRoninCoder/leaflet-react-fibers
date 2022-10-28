@@ -6,21 +6,21 @@
   ],
   "env": {
     "browser": true,
-    "es6": true
+    "es2021": true,
+    "cypress/globals": true
   },
   "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "standard"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": "latest",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": [
-    "@typescript-eslint",
-    "react"
-  ],
   "settings": {
     "react": {
       "version": "detect" // React version. "detect" automatically picks the version you have installed.
@@ -29,12 +29,13 @@
       // It will default to "detect" in the future
     }
   },
+  "plugins": [
+    "react",
+    "cypress",
+    "@typescript-eslint"
+  ],
   "rules": {
-    "no-redeclare": "off",
-    "@typescript-eslint/no-explicit-any": "off",
-    "space-before-function-paren": "off",
-    "@typescript-eslint/no-namespace": "off",
-    "@typescript-eslint/no-unused-vars": "off",
-    "react/jsx-key": "off"
+    "react/no-unknown-property": "off",
+    "space-before-function-paren": "off"
   }
 }
