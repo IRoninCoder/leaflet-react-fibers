@@ -31,7 +31,7 @@ See [Docs](https://chickencoding123.github.io/leaflet-react-fibers) for various 
 
 ### JSX renderer
 You must provide a JSX renderer when embedding HTML in `lfPopup` or `lfTooltip` otherwise their contents are ignored, this is by design:
->:info: You do NOT have to use `react-dom`, any JSX renderer will suffice. 
+>:information_source: You do NOT have to use `react-dom`, any JSX renderer will suffice. 
 ```tsx
 import { LeafletMap, L } from "leaflet-react-fibers"
 import ReactDOM from "react-dom"
@@ -55,7 +55,7 @@ None of the libraries mentioned below provide mutability control out of the box 
 2. [react-leaflet](https://github.com/PaulLeCam/react-leaflet) react wrapper for leaflet which comes with hooks.
 
 ## Known Issues
-[ ] Mutability control does not work at the moment. This is a feature of this library that allows a layer to be explicitly mutable or immutable using a `mutable` prop.
+[x] Mutability control does not work at the moment. This is a feature of this library that allows a layer to be explicitly mutable or immutable using a `mutable` prop.
 
 ## Development
 Clone this repository and simply run `npm run storybook` to get started.
