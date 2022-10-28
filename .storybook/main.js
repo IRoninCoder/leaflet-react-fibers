@@ -10,6 +10,5 @@ module.exports = {
   core: {
     builder: 'webpack5',
     disableTelemetry: true
-  },
-  staticDirs: ['../stories/assets'],
+  }
 }

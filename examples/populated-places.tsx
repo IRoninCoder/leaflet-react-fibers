@@ -67,7 +67,7 @@ const PopulatedPlaces = ({ geoJson, mapHeight }: Partial<PopulatedPlacesProps> =
         }}
       >
 
-        <lfTilesWMS baseUrl="http://ows.mundialis.de/services/service?" options={{
+        <lfTilesWMS baseUrl="https://ows.mundialis.de/services/service?" options={{
           layers: 'TOPO-WMS',
           format: 'image/png',
           noWrap: true,

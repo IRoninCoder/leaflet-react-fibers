@@ -99,7 +99,7 @@ const WyomingExtended = ({ color }: { color: string }) => {
   )
 }
 
-export const WMS_BASE_URL = 'http://ows.mundialis.de/services/service'
+export const WMS_BASE_URL = 'https://ows.mundialis.de/services/service'
 export interface USAProps {
   isVisible: boolean
   zPosition: 'top' | 'middle' | 'bottom'
