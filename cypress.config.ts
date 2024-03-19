@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress'
-import getCompareSnapshotsPlugin from 'cypress-visual-regression/dist/plugin'
+import { configureVisualRegression } from 'cypress-visual-regression/dist/plugin'
 
 export default defineConfig({
   video: false,
@@ -7,12 +7,16 @@ export default defineConfig({
   screenshotsFolder: './cypress/snapshots/actual',
   trashAssetsBeforeRuns: true,
   component: {
+    env: {
+      visualRegressionBaseDirectory: './cypress/snapshots/base',
+      visualRegressionDiffDirectory: './cypress/snapshots/diff'
+    },
     devServer: {
       framework: 'react',
       bundler: 'vite'
     },
-    setupNodeEvents(on, config) {
-      getCompareSnapshotsPlugin(on, config)
+    setupNodeEvents(on) {
+      configureVisualRegression(on)
     }
   }
 })
