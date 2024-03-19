@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/chickencoding123/leaflet-react-fibers/compare/2.0.1...2.0.2) (2024-03-19)
+
+
+### Bug Fixes
+
+* react dep update ([#13](https://github.com/chickencoding123/leaflet-react-fibers/issues/13)) ([d925c87](https://github.com/chickencoding123/leaflet-react-fibers/commit/d925c87b4b187a9b69225f778e6b0f34074be3dd))
+
 ## [2.0.1](https://github.com/chickencoding123/leaflet-react-fibers/compare/2.0.0...2.0.1) (2022-10-28)
 
 
