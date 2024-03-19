@@ -37,11 +37,11 @@
     "leaflet-react"
   ],
   "peerDependencies": {
-    "@types/leaflet": "^1.0.0",
-    "@types/react": "^17.0.0",
-    "leaflet": "^1.0.0",
-    "react": "^17.0.0",
-    "scheduler": "^0.20.0"
+    "@types/leaflet": ">1.0.0",
+    "@types/react": ">17.0.0",
+    "leaflet": ">1.0.0",
+    "react": ">17.0.0",
+    "scheduler": ">0.20.0"
   },
   "scripts": {
     "prepare": "husky install && npx commitizen init cz-conventional-changelog --force",
