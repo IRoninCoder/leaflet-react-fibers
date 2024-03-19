@@ -36,9 +36,11 @@
 //   }
 // }
 
-import compareSnapshotCommand from 'cypress-visual-regression/dist/command'
+import { addCompareSnapshotCommand } from 'cypress-visual-regression/dist/command'
 
-compareSnapshotCommand()
+addCompareSnapshotCommand({
+  errorThreshold: 0.2 // %2 difference between expected and actual screenshot / snapshot
+})
 
 declare global {
   namespace Cypress {
